@@ -752,3 +752,255 @@ svg { flex-shrink: 0; stroke-width: 1.75; }
   .air-live-reading { max-width: none; text-align: left; }
   .air-ranges-table th, .air-ranges-table td { padding: 9px 8px; font-size: 9px; }
 }
+
+:root {
+  font-size: 16px;
+  --sky: #1473a6;
+  --sky-soft: #eaf5fb;
+  --emerald: #08785f;
+  --emerald-soft: #e8f6f0;
+  --indigo: #4b55a5;
+  --indigo-soft: #eef0fb;
+  --sunset: #a65316;
+  --sunset-soft: #fff3e5;
+  --rose: #bd4149;
+  --rose-soft: #fff0ef;
+}
+body { color: #202b3c; font-size: 16px; line-height: 1.6; }
+.page-wrap { width: min(100%, 1080px); }
+.page-heading h1 { font-size: 34px; line-height: 1.2; }
+.page-heading p, .section-heading p { font-size: 15px; line-height: 1.6; }
+.section-heading h2 { font-size: 23px; line-height: 1.3; }
+.section-tab { font-size: 15px; }
+.section-tab.selected { border-color: #b9d8d1; color: #0c625b; background: #e4f2ee; box-shadow: inset 0 -2px #0f766e; }
+.mode-switch button { font-size: 14px; }
+.section-summary p { font-size: 15px; line-height: 1.65; }
+.section-summary > span { font-size: 13px; }
+.alert-banner { padding: 14px 16px; border-radius: 9px; }
+.alert-banner strong { font-size: 15px; }
+.alert-banner span { font-size: 14px; line-height: 1.6; }
+.alert-banner > button, .alert-banner > a { border: 0; color: inherit; background: transparent; font-size: 14px; font-weight: 650; }
+.alert-banner > button { display: inline-flex; align-items: center; gap: 5px; padding: 7px; cursor: pointer; }
+.card-overline { font-size: 13px; }
+.weather-card, .score-card, .brief-outfit, .air-card, .prep-card, .forecast-card, .health-section { border-radius: 13px; }
+.weather-card, .score-card { padding: 23px; }
+.brief-outfit, .air-card, .prep-card, .forecast-card { padding: 21px; }
+.weather-card.weather-clear {
+  border-color: #f0d7b6;
+  background: linear-gradient(145deg, #fffdfa 0%, #fff8ef 100%);
+}
+.weather-card.weather-clear .temperature, .weather-card.weather-clear .weather-illustration { color: #ae631e; }
+.weather-card.weather-clear .weather-illustration { border-color: #f0ddc4; background: #fff4e5; }
+.weather-card.weather-heat {
+  border-color: #efc7b9;
+  background: linear-gradient(145deg, #fffaf7 0%, #fff1ec 100%);
+}
+.weather-card.weather-heat .temperature, .weather-card.weather-heat .weather-illustration { color: #c04e3e; }
+.weather-card.weather-heat .weather-illustration { border-color: #f0d1c7; background: #fff0eb; }
+.weather-card.weather-rain {
+  border-color: #c7dff0;
+  background: linear-gradient(145deg, #fbfdff 0%, #eff7fc 100%);
+}
+.weather-card.weather-rain .temperature, .weather-card.weather-rain .weather-illustration { color: #286e9d; }
+.weather-card.weather-rain .weather-illustration { border-color: #d3e6f3; background: #eaf5fb; }
+.weather-description { font-size: 15px; }
+.temperature { font-size: 82px; }
+.temperature span { font-size: 42px; }
+.weather-stats { padding: 14px 0 11px; }
+.weather-stats > div { grid-template-columns: 19px auto; grid-template-rows: 20px 24px; }
+.weather-stats > div:nth-child(1) svg, .weather-stats > div:nth-child(2) svg { color: #267cad; }
+.weather-stats > div:nth-child(3) svg { color: #527b9c; }
+.weather-stats span { font-size: 12px; }
+.weather-stats strong { font-size: 16px; }
+.weather-stats small { font-size: 12px; }
+.weather-foot { font-size: 12px; }
+.weather-foot i { background: #128267; }
+.score-card { border-color: #cde5dd; background: linear-gradient(145deg, #fff 0%, #f2faf7 100%); }
+.score-top h2, .brief-outfit h2 { font-size: 19px; }
+.score-icon { border-color: #cce5dd; color: #08785f; background: #e8f6f0; }
+.score-ring { background: conic-gradient(var(--score-color, #0f766e) var(--score), #e5eeeb 0); }
+.score-ring strong { font-size: 32px; }
+.score-ring span { font-size: 13px; }
+.score-caption strong { font-size: 15px; line-height: 1.45; }
+.score-caption span { font-size: 13px; line-height: 1.6; }
+.score-factors { padding: 12px 0; }
+.score-factors span, .score-factors b { font-size: 12px; }
+.score-factors span svg { color: #267cad; }
+.score-factors .factor-warn, .score-factors .factor-warn + b { color: #b24b3f; }
+.score-tip { padding: 10px; color: #155e52; background: #e8f6f0; font-size: 12px; line-height: 1.6; }
+.brief-outfit { border-color: #ead9c5; background: linear-gradient(150deg, #fff 0%, #fffaf4 100%); }
+.brief-icon, .prep-icon.lavender { border-color: #f0ddc4; color: #a75a1c; background: #fff4e5; }
+.brief-outfit > p { font-size: 18px; line-height: 1.6; }
+.brief-outfit-detail { gap: 12px; }
+.brief-outfit-detail > div { grid-template-columns: 20px 64px 1fr; font-size: 13px; }
+.brief-outfit-detail > div:first-child svg { color: #267cad; }
+.brief-outfit-detail > div:nth-child(2) svg { color: #17836f; }
+.brief-outfit-detail b { font-size: 13px; }
+.brief-outfit > a { color: #3156a4; font-size: 13px; }
+.section-block { margin-top: 34px; }
+.section-heading { margin-bottom: 18px; }
+.text-button { padding: 8px 10px; border-radius: 7px; color: #3156a4; font-size: 14px; }
+.text-button:hover { background: var(--indigo-soft); }
+.quality-badge, .season-chip, .recommend-tag, .place-count { font-size: 12px; }
+.forecast-card-heading strong { font-size: 15px; }
+.forecast-card-heading > div > span { font-size: 13px; line-height: 1.6; }
+.forecast-updated, .temp-range-key { font-size: 12px !important; }
+.chart-axis-label { font-size: 12px; }
+.chart-tooltip strong, .chart-tooltip span { font-size: 12px; }
+.chart-legend { font-size: 12px; }
+.daily-forecast { padding: 13px 8px; border-color: #dce8f0; background: #fbfdff; }
+.daily-weekday { color: #24485e; font-size: 13px; }
+.daily-date, .daily-rain { font-size: 12px; }
+.daily-weather-icon { color: #d28a2e; }
+.daily-weather-icon.rainy { color: #267cad; }
+.daily-rain { color: #226e9b; }
+.daily-temperatures > span, .daily-temperatures > b, .daily-range-labels { font-size: 11px; }
+.daily-range-track { background: #deebf2; }
+.daily-range-track i { background: #3b8fbd; }
+.air-card { border-color: #dfe7ea; }
+.air-card-heading { font-size: 14px; }
+.metric-icon.purple { border-color: #d9dcf5; color: #4b55a5; background: #eef0fb; }
+.metric-icon.mint { border-color: #cce8de; color: #08785f; background: #e8f6f0; }
+.metric-icon.blue { border-color: #cde2ef; color: #1473a6; background: #eaf5fb; }
+.aqi-line > strong { font-size: 40px; }
+.aqi-line > span { font-size: 13px; }
+.aqi-label { padding: 5px 9px; font-size: 12px; font-weight: 650; }
+.aqi-scale { height: 7px; background: linear-gradient(90deg, #18a879 0 20%, #4396ca 20% 40%, #e8a234 40% 60%, #d95855 60% 100%); }
+.aqi-scale span { top: -3px; width: 12px; height: 12px; border-color: #fff; background: #203143; box-shadow: 0 0 0 1px rgb(32 49 67 / 25%); }
+.aqi-scale-labels { color: #475569; font-size: 11px; }
+.pollutant-reading { margin: 15px 0 8px; font-size: 34px; }
+.pollutant-reading small { font-size: 13px; }
+.pollutant-bottom { align-items: center; margin-bottom: 10px; font-size: 12px; }
+.mini-good { padding: 4px 8px; font-size: 12px; font-weight: 650; }
+.mini-progress { height: 7px; background: #e6edf0; }
+.mini-progress i, .mini-progress i.blue-bar { background: #118361; }
+.air-card.air-grade-좋음 { border-color: #9bd6bd; background: linear-gradient(145deg, #fff 0%, #f0fbf5 100%); }
+.air-card.air-grade-보통 { border-color: #aad5e9; background: linear-gradient(145deg, #fff 0%, #f1f9fd 100%); }
+.air-card.air-grade-나쁨 { border-color: #edcc8f; background: linear-gradient(145deg, #fff 0%, #fff9ed 100%); }
+.air-card.air-grade-매우-나쁨 { border-color: #e8b0ad; background: linear-gradient(145deg, #fff 0%, #fff3f1 100%); }
+.air-grade-좋음.aqi-label, .mini-good.air-grade-좋음 { border-color: #a9dec7; color: #08684f; background: #e5f6ed; }
+.air-grade-보통.aqi-label, .mini-good.air-grade-보통 { border-color: #b8dced; color: #145f8b; background: #e8f5fb; }
+.air-grade-나쁨.aqi-label, .mini-good.air-grade-나쁨 { border-color: #edcf98; color: #8d510e; background: #fff3dc; }
+.air-grade-매우-나쁨.aqi-label, .mini-good.air-grade-매우-나쁨 { border-color: #e9b7b1; color: #a5333b; background: #ffebe9; }
+.air-grade-좋음.aqi-label i { background: #118361; }
+.air-grade-보통.aqi-label i { background: #1473a6; }
+.air-grade-나쁨.aqi-label i { background: #c17b16; }
+.air-grade-매우-나쁨.aqi-label i { background: #c64b48; }
+.air-card.air-grade-좋음 .mini-progress i { background: #18a879; }
+.air-card.air-grade-보통 .mini-progress i { background: #4396ca; }
+.air-card.air-grade-나쁨 .mini-progress i { background: #e8a234; }
+.air-card.air-grade-매우-나쁨 .mini-progress i { background: #d95855; }
+.prep-card { border-color: #dce9e4; background: linear-gradient(150deg, #fff 0%, #f8fcfa 100%); }
+.prep-icon.peach { border-color: #f0d9c8; color: #b05b35; background: #fff1e9; }
+.prep-title strong { font-size: 15px; }
+.prep-title span { font-size: 12px; line-height: 1.6; }
+.outfit-row { gap: 11px; padding: 10px 0; }
+.outfit-icon { width: 30px; height: 30px; color: #3156a4; background: #f0f2fb; }
+.outfit-row b { font-size: 13px; }
+.outfit-row > div span { color: #475569; font-size: 14px; line-height: 1.6; }
+.outfit-row > svg { color: #08785f; }
+.mask-note { padding: 11px; background: #eff7fb; }
+.mask-symbol { color: #1473a6; }
+.mask-note b { font-size: 13px; }
+.mask-note > div:nth-child(2) span { color: #35556c; font-size: 13px; line-height: 1.5; }
+.mask-note .mask-status { color: #145f8b; background: #e2f1f9; font-size: 11px; }
+.mask-note.mask-alert { border-color: #e9b7b1; background: #fff0ef; }
+.mask-alert .mask-status { color: #a5333b; }
+.essential-list { gap: 9px; }
+.essential-list > div { grid-template-columns: 28px 1fr; grid-template-rows: 22px 18px; padding: 10px; border-color: #e4e9ec; }
+.essential-list > div > span { color: #3156a4; }
+.essential-list b { font-size: 13px; }
+.essential-list small { color: #52606a; font-size: 11px; }
+.essential-list .essential-active { border-color: #efcc9a; background: #fff8eb; }
+.essential-list .essential-active small { color: #8d510e; }
+.essentials-tip { padding: 10px; color: #76521f; background: #fff7e8; font-size: 12px; line-height: 1.6; }
+.recommend-tag { border-color: #cce8de; color: #08785f; background: #e8f6f0; }
+.place-count { border-color: #cde2ef; color: #145f8b; background: #eaf5fb; }
+.area-filters button { padding: 9px 13px; font-size: 13px; }
+.area-filters button:hover { color: #3156a4; background: #eef0fb; }
+.area-filters button.filter-active { border-color: #bdc5ef; color: #39458e; background: #eef0fb; }
+.category-select select { font-size: 13px; }
+.place-safety-note { padding: 11px 13px; border-left: 3px solid #d59a3d; border-radius: 0 7px 7px 0; color: #674d26; background: #fff8eb; font-size: 13px; line-height: 1.65; }
+.place-card { border-color: #dce4ec; border-radius: 10px; }
+.place-card:hover, .place-card-selected { border-color: #8eb6cb; box-shadow: 0 0 0 2px rgb(20 115 166 / 9%); }
+.place-art { border-color: #cde2ef; color: #1473a6; background: #eaf5fb; }
+.place-meta { font-size: 12px; }
+.place-card h3 { font-size: 16px; line-height: 1.5; }
+.place-details > summary { color: #3156a4; font-size: 13px; }
+.place-description { font-size: 14px; line-height: 1.65; }
+.place-resident-access { background: #eef7f4; }
+.place-resident-access strong { color: #155e52; font-size: 12px; }
+.place-resident-access span, .place-recommendations p { color: #475569; font-size: 13px; line-height: 1.6; }
+.place-recommendations p::before { color: #1473a6; content: "• "; }
+.place-hours { font-size: 12px; }
+.place-select, .place-map-link, .map-directions-link { color: #3156a4; font-size: 13px; }
+.place-map-panel { border-color: #cbdde8; border-radius: 10px; }
+.place-map-heading { background: #f1f8fc; }
+.place-map-heading span, .place-map-heading small { font-size: 12px; }
+.place-map-heading strong { font-size: 15px; }
+.map-directions-link { background: #f8fbfd; }
+.empty-state { font-size: 14px; }
+.health-section { border-color: #cde5dd; background: linear-gradient(155deg, #f8fcfa 0%, #f2f8fb 100%); padding: 22px; }
+.season-chip { border-color: #f0d9ac; color: #8d510e; background: #fff5df; }
+.health-mark, .disease-icon, .daily-health-icon { border-color: #cce8de; color: #08785f; background: #e8f6f0; }
+.health-card { border-color: #d9e7e2; border-radius: 9px; padding: 14px; }
+.health-card:hover, .health-card-selected { border-color: #87c4ad; background: #f0faf5; }
+.disease-season { color: #725b36; font-size: 11px; }
+.health-card-title { margin: 5px 0; font-size: 14px; }
+.health-card-description { color: #475569; font-size: 13px; line-height: 1.6; }
+.risk-badge { border-color: #b8dfce; color: #08684f; background: #e5f6ed; font-size: 11px; }
+.risk-경계 { border-color: #edcf98; color: #8d510e; background: #fff3dc; }
+.risk-높음 { border-color: #e9b7b1; color: #a5333b; background: #ffebe9; }
+.disease-detail, .daily-health-card { border-color: #dce7e3; border-radius: 9px; padding: 17px; }
+.detail-overline, .detail-block h4 { font-size: 13px; }
+.detail-heading h3 { font-size: 20px; }
+.symptom-list li, .prevention-list li { color: #475569; font-size: 14px; line-height: 1.65; }
+.symptom-list li::before { background: #d0872b; }
+.prevention-list svg { color: #08785f; }
+.local-advice { border-color: #cde2ef; background: #f0f8fc; }
+.local-advice-title { color: #145f8b; font-size: 13px; }
+.local-advice p { color: #35556c; font-size: 14px; line-height: 1.7; }
+.daily-health-heading h3 { font-size: 15px; }
+.daily-health-heading div > span { color: #08785f; font-size: 12px; }
+.daily-health-task { color: #344256; font-size: 13px; line-height: 1.6; }
+.task-checkbox { border-color: #93b9aa; }
+.task-complete .task-checkbox { border-color: #08785f; background: #08785f; }
+.health-progress { height: 5px; background: #e4eee9; }
+.health-progress span { background: #0a8a6c; }
+.health-disclaimer { color: #52606a; font-size: 12px; line-height: 1.6; }
+.health-disclaimer svg { color: #b77518; }
+.air-details-panel { border-color: #cbded8; background: #f8fcfa; }
+.air-details-heading h3 { font-size: 19px; }
+.air-live-reading { font-size: 13px; }
+.air-action { border-color: #efcf9b; color: #6f4816; background: #fff7e8; font-size: 14px; line-height: 1.7; }
+.air-action svg { color: #bc7314; }
+.air-ranges-table th, .air-ranges-table td { color: #344256; font-size: 13px; }
+.air-ranges-table thead th { color: #244a5e; background: #edf5f8; }
+.air-ranges-table .current-air-range { background: #edf7f3; }
+.air-data-source { color: #52606a; font-size: 12px; line-height: 1.65; }
+.footer { color: #52606a; font-size: 12px; }
+
+@media (max-width: 700px) {
+  body { font-size: 15px; }
+  .page-heading h1 { font-size: 29px; }
+  .page-heading p, .section-heading p { font-size: 14px; }
+  .section-heading h2 { font-size: 20px; }
+  .section-tab { font-size: 10px; }
+  .section-summary p { font-size: 14px; }
+  .section-summary > span { font-size: 11px; }
+  .mode-switch button { font-size: 13px; }
+  .weather-card, .score-card, .brief-outfit, .air-card, .prep-card, .forecast-card { padding: 17px; }
+  .temperature { font-size: 76px; }
+  .weather-stats span { font-size: 12px; }
+  .weather-stats strong { font-size: 15px; }
+  .section-block { margin-top: 27px; }
+  .daily-forecast-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .daily-weekday { font-size: 12px; }
+  .daily-date, .daily-rain { font-size: 11px; }
+  .place-card h3 { font-size: 16px; }
+  .health-section { padding: 17px; }
+  .health-card-title { font-size: 15px; }
+  .health-card-description { font-size: 13px; }
+  .symptom-list li, .prevention-list li, .local-advice p { font-size: 14px; }
+  .air-ranges-table th, .air-ranges-table td { font-size: 12px; }
+}
