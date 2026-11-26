@@ -37,6 +37,7 @@ type Place = {
   icon: typeof Building2
 }
 type DiseaseId = 'dengue' | 'respiratory' | 'flu' | 'waterborne' | 'heat'
+type FirstAidId = 'heat' | 'choking' | 'bleeding' | 'fainting'
 type Disease = {
   id: DiseaseId
   name: string
@@ -130,6 +131,39 @@ const dailyHealthTasks = [
   '물병을 챙겨 수분 자주 보충하기',
   '야외 활동 전 모기 기피제 사용하기',
   '길거리 얼음과 개봉된 생수 피하기',
+]
+const firstAidGuides: { id: FirstAidId; title: string; icon: typeof HeartPulse; steps: string[]; avoid: string[]; emergency?: string }[] = [
+  {
+    id: 'heat',
+    title: '폭염·열사병 의심',
+    icon: Sun,
+    steps: ['즉시 115에 연락하고 그늘이나 냉방되는 실내로 옮깁니다.', '겉옷·조이는 옷을 느슨하게 하고 피부를 시원한 물로 적셔 바람을 쐽니다.', '목·겨드랑이·사타구니에 천으로 감싼 냉찜질을 대며 상태를 계속 살핍니다.', '의식이 또렷하고 삼킬 수 있을 때만 시원한 물을 조금씩 마시게 합니다.'],
+    avoid: ['혼란·의식 저하·구토가 있으면 물이나 음식을 먹이지 마세요.', '의식 저하를 단순 탈진으로 보고 기다리지 말고 응급 도움을 요청하세요.'],
+    emergency: '의식 혼란, 경련, 실신 또는 매우 뜨거운 피부는 열사병 응급 신호입니다.',
+  },
+  {
+    id: 'choking',
+    title: '기도 폐쇄·질식',
+    icon: Wind,
+    steps: ['강하게 기침하거나 말할 수 있으면 계속 기침하도록 격려하고 곁에서 관찰합니다.', '기침·말·호흡이 불가능하면 115에 연락시키고, 성인·1세 이상은 견갑골 사이를 손바닥 뒤꿈치로 최대 5회 두드립니다.', '막힘이 풀리지 않으면 배꼽 위·흉골 아래에 주먹을 대고 안쪽·위쪽으로 복부 밀어내기를 최대 5회 시행합니다. 풀릴 때까지 5회씩 번갈아 반복합니다.', '임신 후기 또는 복부를 감싸기 어려운 경우 복부 대신 가슴 밀어내기를 사용합니다. 의식을 잃으면 바닥에 눕혀 CPR을 시작합니다.'],
+    avoid: ['입안에 보이지 않는 물체를 손가락으로 훑지 마세요.', '영아(1세 미만)는 복부 밀어내기를 하지 말고 영아 응급처치 지침과 115 안내를 따르세요.'],
+    emergency: '의식이 없어지면 즉시 115에 신고하고 CPR을 시작하세요. 물체가 보일 때만 제거합니다.',
+  },
+  {
+    id: 'bleeding',
+    title: '출혈·상처·화상',
+    icon: Shield,
+    steps: ['상처 출혈은 깨끗한 거즈나 천으로 상처를 직접 강하게 눌러 지혈합니다. 젖어도 처음 댄 천을 떼지 말고 위에 덧댑니다.', '출혈이 멎으면 깨끗한 물로 작은 상처를 씻고 드레싱합니다. 깊거나 벌어진 상처는 의료기관에서 확인합니다.', '화상은 가능한 한 빨리 흐르는 시원한 물로 20분간 식힙니다.', '반지·시계 등 조이는 물건을 붓기 전에 빼고, 식힌 뒤 깨끗하고 들러붙지 않는 천으로 느슨하게 덮습니다.'],
+    avoid: ['화상에 얼음·기름·치약을 대지 말고 물집을 터뜨리지 마세요.', '상처에 박힌 물체는 빼지 말고 주변을 눌러 응급 진료를 받으세요.', '피가 멈추지 않거나 분출성 출혈·넓은 화상이면 115에 연락하세요.'],
+  },
+  {
+    id: 'fainting',
+    title: '실신·어지러움·저혈당·탈수',
+    icon: Activity,
+    steps: ['주변 위험을 치우고 바닥에 눕혀 호흡과 의식 반응을 확인합니다. 부상이 의심되지 않으면 다리를 약간 높입니다.', '의식이 없지만 정상 호흡을 하면 기도가 막히지 않도록 옆으로 눕히는 회복 자세를 취하고 호흡을 계속 살핍니다.', '의식이 또렷하고 안전하게 삼킬 수 있으며 저혈당이 의심되면 포도당 정제나 당이 든 음료를 제공하고 호전 여부를 확인합니다.', '탈수가 의심되지만 의식이 또렷하면 물이나 경구수분보충액을 조금씩 마시게 합니다.'],
+    avoid: ['의식이 흐리거나 삼키기 어려운 사람에게 음식·음료·당을 입으로 주지 마세요.', '호흡이 없거나 정상적이지 않으면 회복 자세 대신 115 신고와 CPR을 시작하세요.', '넘어져 머리·목·척추 손상이 의심되면 불필요하게 옮기지 마세요.'],
+    emergency: '의식이 돌아오지 않음, 흉통, 호흡곤란, 경련, 한쪽 마비 또는 반복 실신은 즉시 응급 상황입니다.',
+  },
 ]
 const place = (
   name: string,
@@ -286,6 +320,7 @@ function App() {
   const [now, setNow] = useState(new Date())
   const [forecast, setForecast] = useState<ForecastData>(() => createSampleForecast())
   const [selectedDisease, setSelectedDisease] = useState<DiseaseId>('dengue')
+  const [selectedFirstAid, setSelectedFirstAid] = useState<FirstAidId>('heat')
   const [completedHealthTasks, setCompletedHealthTasks] = useState<string[]>([])
 
   useEffect(() => {
@@ -722,6 +757,44 @@ function App() {
                 <span>{current.temperature}°C</span><span>습도 {current.humidity}%</span><span>AQI {current.aqi}</span><span>PM10 {current.pm10}</span><span>PM2.5 {current.pm25}</span><span>{mode === 'live' ? '실시간' : `${modeButtons.find(item => item.value === mode)?.label} 모드`}</span>
               </div>
               <p className="health-briefing-action"><Shield size={16} />{priorityAction[priorityDisease.id]}</p>
+            </section>
+            <section className="first-aid-section" aria-labelledby="first-aid-title">
+              <div className="first-aid-heading">
+                <div><span className="eyebrow"><HeartPulse size={14} /> 바로 쓰는 안전 안내</span><h3 id="first-aid-title">응급처치 가이드</h3><p>전문 의료진이 도착하기 전, 안전을 확보하고 초기 대응을 시작하세요.</p></div>
+                <span className="first-aid-callout"><span>베트남 구급차</span><strong>115</strong></span>
+              </div>
+              <div className="cpr-card">
+                <div className="cpr-card-heading"><span className="cpr-icon"><HeartPulse size={21} /></span><div><span>성인 기본 안내</span><h4>심폐소생술(CPR) &amp; AED</h4></div></div>
+                <ol className="cpr-steps">
+                  <li><span>1</span><div><strong>현장 안전·도움 요청</strong><p>주변 위험을 확인하고 반응이 없으면 큰 소리로 도움을 요청하세요. 한 사람은 115에 신고하고 다른 사람은 AED를 가져오도록 합니다.</p></div></li>
+                  <li><span>2</span><div><strong>반응과 정상 호흡 확인</strong><p>어깨를 가볍게 두드려 반응을 확인하고, 정상 호흡이 없거나 헐떡임만 있으면 심정지로 보고 즉시 CPR을 시작하세요. 맥박 확인으로 지체하지 마세요.</p></div></li>
+                  <li><span>3</span><div><strong>가슴 압박 시작</strong><p>단단한 바닥에 눕히고 가슴 중앙, 흉골 아래쪽 절반에 손꿈치를 놓습니다. 분당 100–120회, 성인 약 5cm 깊이로 강하고 빠르게 누른 뒤 매번 가슴이 완전히 올라오게 합니다.</p></div></li>
+                  <li><span>4</span><div><strong>중단을 최소화</strong><p>도움이 올 때까지 계속 압박하세요. 훈련을 받았고 할 수 있다면 30회 압박과 2회 인공호흡을 시행하고, 그렇지 않다면 가슴 압박만 계속하며 115 신고자의 안내를 따르세요.</p></div></li>
+                </ol>
+                <div className="aed-steps">
+                  <h5><Activity size={16} /> AED가 도착하면</h5>
+                  <p><b>전원 켜기</b><span>→</span><b>맨가슴에 패드 부착</b><span>→</span><b>분석 중 모두 떨어지기</b><span>→</span><b>안내 시 충격 시행</b><span>→</span><b>즉시 압박 재개</b></p>
+                  <small>충격 버튼을 누르기 전 주변 사람이 환자에게 닿지 않았는지 확인하세요. AED 음성 안내를 따르고 구급대가 인계할 때까지 CPR을 이어갑니다.</small>
+                </div>
+              </div>
+              <div className="first-aid-situations">
+                <h4>상황별 응급처치</h4>
+                <div className="first-aid-tabs" role="tablist" aria-label="상황별 응급처치 선택">
+                  {firstAidGuides.map(guide => {
+                    const GuideIcon = guide.icon
+                    return <button key={guide.id} id={`first-aid-tab-${guide.id}`} type="button" role="tab" aria-selected={selectedFirstAid === guide.id} aria-controls="first-aid-panel" className={selectedFirstAid === guide.id ? 'first-aid-tab selected' : 'first-aid-tab'} onClick={() => setSelectedFirstAid(guide.id)}><GuideIcon size={17} /><span>{guide.title}</span></button>
+                  })}
+                </div>
+                {firstAidGuides.filter(guide => guide.id === selectedFirstAid).map(guide => (
+                  <article className={`first-aid-detail first-aid-${guide.id}`} id="first-aid-panel" role="tabpanel" aria-labelledby={`first-aid-tab-${guide.id}`} key={guide.id}>
+                    <h5>{guide.title} · 초기 대응</h5>
+                    <ol>{guide.steps.map(step => <li key={step}>{step}</li>)}</ol>
+                    <div className="first-aid-avoid"><strong>하지 말아야 할 행동</strong><ul>{guide.avoid.map(item => <li key={item}>{item}</li>)}</ul></div>
+                    {guide.emergency && <p className="first-aid-emergency"><ShieldAlert size={15} />{guide.emergency}</p>}
+                  </article>
+                ))}
+              </div>
+              <p className="first-aid-disclaimer"><ShieldAlert size={15} /> 응급처치는 전문 의료진이 도착하기 전까지의 초기 대응입니다. 의식 없음·정상 호흡 없음·호흡 곤란·심한 통증·지속 출혈 등 위급 징후가 있으면 즉시 베트남 응급번호 115에 신고하고, 전화 안내를 따르세요. 본 안내는 교육용 요약이며 CPR/AED 실습 교육을 대체하지 않습니다.</p>
             </section>
             <h3 className="health-guides-title">질환별 상세 가이드 <span>선택해 증상과 단계별 예방 수칙을 확인하세요</span></h3>
             <div className="health-grid" role="tablist" aria-label="질병별 건강 가이드">
