@@ -716,3 +716,39 @@ svg { flex-shrink: 0; stroke-width: 1.75; }
   .section-tab { font-size: 8px; }
   .section-tab svg { width: 17px; height: 17px; }
 }
+.info-dot {
+  flex: 0 0 auto;
+  padding: 0;
+  background: #fff;
+  cursor: pointer;
+}
+.info-dot:hover, .info-dot[aria-expanded="true"] { border-color: #b7d1ca; color: var(--teal); background: var(--teal-soft); }
+.text-button[aria-expanded="true"] { color: #475467; }
+.mini-good.air-grade-나쁨 { color: var(--amber); background: var(--amber-soft); }
+.mini-good.air-grade-매우-나쁨 { color: var(--coral); background: var(--coral-soft); }
+.air-details-panel {
+  margin-top: 13px;
+  padding: 19px;
+  border: 1px solid #dfe9e5;
+  border-radius: 10px;
+  background: #fbfdfc;
+}
+.air-details-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.air-details-heading h3 { margin: 6px 0 0; color: var(--ink); font-size: 15px; font-weight: 650; }
+.air-live-reading { max-width: 55%; padding: 7px 9px; border-radius: 6px; color: #47665f; background: #edf5f3; font-size: 10px; line-height: 1.5; text-align: right; }
+.air-action { display: flex; align-items: flex-start; gap: 9px; margin: 15px 0; padding: 12px; border: 1px solid #eadfca; border-radius: 7px; color: #725b36; background: #fffaf1; font-size: 11px; line-height: 1.7; }
+.air-action svg { margin-top: 1px; color: #987543; }
+.air-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 7px; background: #fff; }
+.air-ranges-table { width: 100%; border-collapse: collapse; text-align: left; }
+.air-ranges-table th, .air-ranges-table td { padding: 10px 12px; border-bottom: 1px solid #edf0f2; color: #52606a; font-size: 10px; white-space: nowrap; }
+.air-ranges-table thead th { color: #52665f; background: #f5f8f7; font-weight: 650; }
+.air-ranges-table tbody th { color: var(--ink); font-weight: 600; }
+.air-ranges-table tr:last-child th, .air-ranges-table tr:last-child td { border-bottom: 0; }
+.air-ranges-table .current-air-range { background: #f0f6f4; }
+.air-data-source { margin: 12px 0 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+@media (max-width: 700px) {
+  .air-details-panel { padding: 13px; }
+  .air-details-heading { flex-direction: column; }
+  .air-live-reading { max-width: none; text-align: left; }
+  .air-ranges-table th, .air-ranges-table td { padding: 9px 8px; font-size: 9px; }
+}

@@ -153,6 +153,14 @@ const createSampleForecast = (): ForecastData => {
 const areas = ['전체 보기', '미딩·송다', '중화·인친', '스타레이크·외교단지', '탄쑤언·로얄시티', '빈홈 그린베이·스마트시티']
 const codeText = (code: number) => code === 0 ? '맑음' : code < 3 ? '구름 조금' : code < 50 ? '흐림' : code < 70 ? '이슬비' : code < 80 ? '비' : '소나기'
 const qualityText = (aqi: number) => aqi <= 50 ? '좋음' : aqi <= 100 ? '보통' : aqi <= 150 ? '나쁨' : '매우 나쁨'
+const airQualityRanges = [
+  { label: '좋음', aqi: '0–50', pm10: '0–54', pm25: '0–9.0' },
+  { label: '보통', aqi: '51–100', pm10: '55–154', pm25: '9.1–35.4' },
+  { label: '나쁨', aqi: '101–150', pm10: '155–254', pm25: '35.5–55.4' },
+  { label: '매우 나쁨', aqi: '151 이상', pm10: '255 이상', pm25: '55.5 이상' },
+]
+const pollutantQuality = (value: number, goodMax: number, moderateMax: number, badMax: number) =>
+  value <= goodMax ? '좋음' : value <= moderateMax ? '보통' : value <= badMax ? '나쁨' : '매우 나쁨'
 const weatherIcon = (code: number, size = 20) => code === 0 ? <Sun size={size} /> : code < 3 ? <CloudSun size={size} /> : code < 50 ? <Cloud size={size} /> : code < 70 ? <CloudDrizzle size={size} /> : <CloudRain size={size} />
 const forecastTime = (time: string) => `${time.slice(11, 13)}시`
 const forecastDay = (date: string) => new Intl.DateTimeFormat('ko-KR', { weekday: 'short', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`))
@@ -202,6 +210,7 @@ function App() {
   const [weather, setWeather] = useState<WeatherData>(sample)
   const [mode, setMode] = useState<Mode>('live')
   const [activeSection, setActiveSection] = useState<'briefing' | 'forecast' | 'places' | 'health'>('briefing')
+  const [airDetailsOpen, setAirDetailsOpen] = useState(false)
   const [area, setArea] = useState('전체 보기')
   const [category, setCategory] = useState('전체 장소')
   const [selectedPlace, setSelectedPlace] = useState(places[0].name)
@@ -283,6 +292,15 @@ function App() {
   const forecastMax = Math.max(...forecast.daily.map(day => day.max))
   const forecastRange = Math.max(forecastMax - forecastMin, 1)
   const mask = current.aqi > 150 ? 'KF94 마스크 필수' : current.aqi > 100 ? '보건용 마스크 권장' : current.aqi > 50 ? '민감한 분은 마스크 권장' : '마스크 미착용 가능'
+  const pm10Quality = pollutantQuality(current.pm10, 54, 154, 254)
+  const pm25Quality = pollutantQuality(current.pm25, 9, 35.4, 55.4)
+  const airAction = current.aqi > 150 || pm25Quality === '매우 나쁨' || pm10Quality === '매우 나쁨'
+    ? 'KF94 등 보건용 마스크를 착용하고 실외 활동은 가능한 한 피하세요. 창문을 닫고 실내 공기청정기를 가동하며, 몸 상태를 살피고 물을 충분히 마시세요.'
+    : current.aqi > 100 || pm25Quality === '나쁨' || pm10Quality === '나쁨'
+      ? '외출 시 KF94 등 보건용 마스크를 권장해요. 장시간 실외 체류와 격렬한 운동은 줄이고, 실내에서는 공기청정기를 가동하세요.'
+      : current.aqi > 50 || pm25Quality === '보통' || pm10Quality === '보통'
+        ? '민감군은 장시간 야외 활동을 줄이고, 불편함이 있으면 보건용 마스크를 착용하세요. 실내 환기는 바깥 공기 상태를 확인해 조절하세요.'
+        : '대기질이 양호해요. 평소처럼 활동하되, 호흡기 질환이 있다면 몸 상태를 살피고 물을 충분히 마셔 주세요.'
   const season = now.getMonth() >= 4 && now.getMonth() <= 9 ? '우기·고온다습' : '건기·일교차'
   const wetSeason = now.getMonth() >= 4 && now.getMonth() <= 9
   const winterSeason = now.getMonth() <= 1 || now.getMonth() >= 10
@@ -392,8 +410,16 @@ function App() {
           }
 
           {activeSection === 'briefing' && <>
-          <section id="대기질" className="section-block"><div className="section-heading"><div><div className="eyebrow">대기 환경</div><h2>오늘의 공기 상태 <span className={`quality-badge ${current.aqi > 100 ? 'bad' : current.aqi > 50 ? 'moderate' : ''}`}>{qualityText(current.aqi)}</span></h2><p>하노이의 대기질을 확인하고 호흡기를 보호해요.</p></div><button className="text-button" onClick={() => setMode('live')}>상세 정보 <ArrowUpRight size={15} /></button></div>
-            <div className="air-grid"><div className="air-card aqi-card"><div className="air-card-heading"><div className="metric-icon purple"><Activity size={17} /></div><span>미국 통합 대기질 지수</span><span className="info-dot">i</span></div><div className="aqi-line"><strong>{current.aqi}</strong><span>AQI</span><div className={`aqi-label ${current.aqi > 100 ? 'label-bad' : ''}`}><i />{qualityText(current.aqi)}</div></div><div className="aqi-scale"><span /></div><div className="aqi-scale-labels"><span>좋음</span><span>보통</span><span>나쁨</span><span>매우 나쁨</span></div></div><div className="air-card pollutant-card"><div className="air-card-heading"><div className="metric-icon mint"><Wind size={17} /></div><span>미세먼지 · PM10</span></div><div className="pollutant-reading">{current.pm10}<small> μg/m³</small></div><div className="pollutant-bottom"><span>기준 100 μg/m³ 이하</span><span className="mini-good">양호</span></div><div className="mini-progress"><i style={{ width: `${Math.min(100, current.pm10)}%` }} /></div></div><div className="air-card pollutant-card"><div className="air-card-heading"><div className="metric-icon blue"><Wind size={17} /></div><span>초미세먼지 · PM2.5</span></div><div className="pollutant-reading">{current.pm25}<small> μg/m³</small></div><div className="pollutant-bottom"><span>기준 35 μg/m³ 이하</span><span className="mini-good">{current.pm25 > 35 ? '주의' : '양호'}</span></div><div className="mini-progress"><i className="blue-bar" style={{ width: `${Math.min(100, current.pm25 * 2)}%` }} /></div></div></div>
+          <section id="대기질" className="section-block"><div className="section-heading"><div><div className="eyebrow">대기 환경</div><h2>오늘의 공기 상태 <span className={`quality-badge ${current.aqi > 100 ? 'bad' : current.aqi > 50 ? 'moderate' : ''}`}>{qualityText(current.aqi)}</span></h2><p>하노이의 대기질을 확인하고 호흡기를 보호해요.</p></div><button className="text-button" type="button" aria-expanded={airDetailsOpen} aria-controls="air-quality-details" onClick={() => setAirDetailsOpen(open => !open)}>{airDetailsOpen ? '상세 정보 접기' : '상세 정보'} <ArrowUpRight size={15} /></button></div>
+            <div className="air-grid"><div className="air-card aqi-card"><div className="air-card-heading"><div className="metric-icon purple"><Activity size={17} /></div><span>미국 통합 대기질 지수</span><button className="info-dot" type="button" aria-label="대기질 등급과 행동 요령 자세히 보기" aria-expanded={airDetailsOpen} aria-controls="air-quality-details" onClick={() => setAirDetailsOpen(open => !open)}>i</button></div><div className="aqi-line"><strong>{current.aqi}</strong><span>AQI</span><div className={`aqi-label ${current.aqi > 100 ? 'label-bad' : ''}`}><i />{qualityText(current.aqi)}</div></div><div className="aqi-scale"><span style={{ left: `${Math.min(100, (current.aqi / 300) * 100)}%` }} /></div><div className="aqi-scale-labels"><span>좋음</span><span>보통</span><span>나쁨</span><span>매우 나쁨</span></div></div><div className="air-card pollutant-card"><div className="air-card-heading"><div className="metric-icon mint"><Wind size={17} /></div><span>미세먼지 · PM10</span></div><div className="pollutant-reading">{current.pm10}<small> μg/m³</small></div><div className="pollutant-bottom"><span>미국 AQI 등급 기준</span><span className={`mini-good air-grade-${pm10Quality.replace(' ', '-')}`}>{pm10Quality}</span></div><div className="mini-progress"><i style={{ width: `${Math.min(100, (current.pm10 / 300) * 100)}%` }} /></div></div><div className="air-card pollutant-card"><div className="air-card-heading"><div className="metric-icon blue"><Wind size={17} /></div><span>초미세먼지 · PM2.5</span></div><div className="pollutant-reading">{current.pm25}<small> μg/m³</small></div><div className="pollutant-bottom"><span>미국 AQI 등급 기준</span><span className={`mini-good air-grade-${pm25Quality.replace(' ', '-')}`}>{pm25Quality}</span></div><div className="mini-progress"><i className="blue-bar" style={{ width: `${Math.min(100, (current.pm25 / 100) * 100)}%` }} /></div></div></div>
+            {airDetailsOpen && <div className="air-details-panel" id="air-quality-details">
+              <div className="air-details-heading"><div><span className="eyebrow">측정값 안내</span><h3>대기질 등급과 오늘의 행동 요령</h3></div><span className="air-live-reading">AQI {current.aqi} {qualityText(current.aqi)} · PM10 {current.pm10} ({pm10Quality}) · PM2.5 {current.pm25} ({pm25Quality})</span></div>
+              <p className="air-action"><ShieldAlert size={17} /><span>{airAction}</span></p>
+              <div className="air-table-wrap"><table className="air-ranges-table"><thead><tr><th>등급</th><th>US AQI</th><th>PM10 (μg/m³)</th><th>PM2.5 (μg/m³)</th></tr></thead><tbody>
+                {airQualityRanges.map(range => <tr key={range.label} className={qualityText(current.aqi) === range.label ? 'current-air-range' : ''}><th scope="row">{range.label}</th><td>{range.aqi}</td><td>{range.pm10}</td><td>{range.pm25}</td></tr>)}
+              </tbody></table></div>
+              <p className="air-data-source">하노이 실시간 대기질 데이터: Open-Meteo Air Quality API (US AQI, PM10, PM2.5). 등급 구간은 미국 EPA AQI 기준을 간단히 묶어 안내합니다.</p>
+            </div>}
           </section>
 
           <section id="옷차림" className="section-block"><div className="section-heading"><div><div className="eyebrow">외출 준비</div><h2>오늘의 외출 준비</h2><p>현재 날씨에 꼭 맞는 옷차림과 준비물을 챙겨요.</p></div><div className="recommend-tag"><BadgeCheck size={15} /> 맞춤 추천</div></div>
