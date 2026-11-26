@@ -19,7 +19,7 @@ type WeatherData = {
   code: number
   updatedAt: string
 }
-type HourlyForecast = { time: string; temperature: number; rainChance: number }
+type HourlyForecast = { time: string; temperature: number; feelsLike: number; rainChance: number; code: number }
 type DailyForecast = { date: string; code: number; max: number; min: number; rainChance: number }
 type ForecastData = { hourly: HourlyForecast[]; daily: DailyForecast[] }
 type Mode = 'live' | 'rain' | 'heat' | 'clear'
@@ -167,7 +167,13 @@ const createSampleForecast = (): ForecastData => {
     const hour = (startHour + offset) % 24
     const temperature = Math.round(27 + 4 * Math.sin(((hour - 7) / 24) * Math.PI * 2))
     const time = new Date(start.getTime() + (startHour + offset) * 60 * 60 * 1000 + 7 * 60 * 60 * 1000).toISOString().slice(0, 16)
-    return { time, temperature, rainChance: rainByHour[hour] }
+    return {
+      time,
+      temperature,
+      feelsLike: Math.round(temperature + (temperature >= 28 ? 2 : 1)),
+      rainChance: rainByHour[hour],
+      code: rainByHour[hour] >= 50 ? 61 : hour >= 10 && hour <= 15 ? 2 : 3,
+    }
   })
   const dailyRain = [20, 35, 15, 45, 25, 30, 10]
   const daily = Array.from({ length: 7 }, (_, offset) => {
@@ -190,26 +196,48 @@ const pollutantQuality = (value: number, goodMax: number, moderateMax: number, b
 const weatherIcon = (code: number, size = 20) => code === 0 ? <Sun size={size} /> : code < 3 ? <CloudSun size={size} /> : code < 50 ? <Cloud size={size} /> : code < 70 ? <CloudDrizzle size={size} /> : <CloudRain size={size} />
 const forecastTime = (time: string) => `${time.slice(11, 13)}시`
 const forecastDay = (date: string) => new Intl.DateTimeFormat('ko-KR', { weekday: 'short', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`))
+const dayWeatherNote = (day: DailyForecast) => day.rainChance >= 60 || day.code >= 80
+  ? '소나기·비 우산 챙기기'
+  : day.rainChance >= 35 || day.code >= 51
+    ? '비 소식 우산 권장'
+    : day.max - day.min >= 9
+      ? '일교차 큼 얇은 겉옷'
+      : day.max >= 34
+        ? '한낮 더위 수분 보충'
+        : day.code <= 2
+          ? '맑고 쾌적한 편'
+          : '구름 많음 무난한 날'
 
 function HourlyChart({ points }: { points: HourlyForecast[] }) {
   const [selected, setSelected] = useState<number | null>(null)
   const minTemperature = Math.floor(Math.min(...points.map(point => point.temperature)) - 2)
   const maxTemperature = Math.ceil(Math.max(...points.map(point => point.temperature)) + 2)
-  const chart = { x: 48, y: 20, width: 700, height: 158 }
+  const chart = { x: 54, y: 30, width: 700, height: 205 }
   const x = (index: number) => chart.x + (index / Math.max(points.length - 1, 1)) * chart.width
   const y = (temperature: number) => chart.y + ((maxTemperature - temperature) / (maxTemperature - minTemperature)) * chart.height
   const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${x(index)} ${y(point.temperature)}`).join(' ')
   const area = `${path} L ${x(points.length - 1)} ${chart.y + chart.height} L ${chart.x} ${chart.y + chart.height} Z`
   const selectAtPointer = (event: React.PointerEvent<HTMLDivElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const relativeX = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width))
+    const svg = event.currentTarget.querySelector('svg')
+    if (!svg) return
+    const bounds = svg.getBoundingClientRect()
+    const chartX = ((event.clientX - bounds.left) / bounds.width) * 800
+    const relativeX = Math.max(0, Math.min(1, (chartX - chart.x) / chart.width))
     setSelected(Math.round(relativeX * (points.length - 1)))
   }
+  const clearPointerSelection = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse') setSelected(null)
+  }
   const active = selected === null ? null : points[selected]
+  const activeIndex = selected ?? -1
   return (
-    <div className="hourly-chart-wrap" onPointerMove={selectAtPointer} onPointerDown={selectAtPointer} onPointerLeave={() => setSelected(null)}>
-      {active && <div className="chart-tooltip" style={{ left: `${Math.min(89, Math.max(8, (selected! / (points.length - 1)) * 100))}%` }}><strong>{forecastTime(active.time)}</strong><span>{active.temperature}°C · 강수 {active.rainChance}%</span></div>}
-      <svg className="hourly-chart" viewBox="0 0 800 238" role="img" aria-label="향후 24시간 기온과 강수확률 변화 그래프">
+    <div className="hourly-chart-wrap" onPointerMove={selectAtPointer} onPointerDown={selectAtPointer} onPointerLeave={clearPointerSelection}>
+      {active && <div className="chart-tooltip" style={{ left: `${Math.min(91, Math.max(9, (activeIndex / Math.max(points.length - 1, 1)) * 100))}%` }}>
+        <strong>{forecastTime(active.time)} · {codeText(active.code)}</strong>
+        <span>기온 {active.temperature}°C · 체감 {active.feelsLike}°C</span>
+        <span>강수 확률 {active.rainChance}%</span>
+      </div>}
+      <svg className="hourly-chart" viewBox="0 0 800 300" role="img" aria-label="향후 24시간 기온과 강수확률 변화 그래프">
         {[0, 1, 2, 3].map(step => {
           const gridY = chart.y + (step / 3) * chart.height
           const temperature = Math.round(maxTemperature - (step / 3) * (maxTemperature - minTemperature))
@@ -217,14 +245,26 @@ function HourlyChart({ points }: { points: HourlyForecast[] }) {
         })}
         {points.map((point, index) => {
           const barHeight = (point.rainChance / 100) * chart.height
-          return <rect key={`rain-${point.time}`} x={x(index) - 5} y={chart.y + chart.height - barHeight} width="10" height={barHeight} rx="4" fill="#b9cec8" opacity=".72" />
+          return <rect key={`rain-${point.time}`} x={x(index) - 6} y={chart.y + chart.height - barHeight} width="12" height={barHeight} rx="5" fill="#78b8d7" opacity=".68" />
         })}
         <path d={area} fill="#0f766e" fillOpacity=".08" />
-        <path d={path} fill="none" stroke="#0f766e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        {points.map((point, index) => <circle key={`temp-${point.time}`} cx={x(index)} cy={y(point.temperature)} r={selected === index ? 5 : 2.7} fill="#fff" stroke="#0f766e" strokeWidth="2" />)}
-        {points.filter((_, index) => index % 4 === 0).map(point => {
+        <path d={path} fill="none" stroke="#0f766e" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        {points.map((point, index) => <circle
+          key={`temp-${point.time}`}
+          cx={x(index)}
+          cy={y(point.temperature)}
+          r={selected === index ? 7 : index % 3 === 0 ? 5 : 3.2}
+          fill={selected === index ? '#fff3df' : '#fff'}
+          stroke={selected === index ? '#c87920' : '#0f766e'}
+          strokeWidth={selected === index ? 3 : 2}
+          tabIndex={0}
+          role="button"
+          aria-label={`${forecastTime(point.time)} ${point.temperature}도, 체감 ${point.feelsLike}도, 강수확률 ${point.rainChance}퍼센트, ${codeText(point.code)}`}
+          onFocus={() => setSelected(index)}
+        />)}
+        {points.filter((point, index) => Number(point.time.slice(11, 13)) % 3 === 0 || index === 0).map(point => {
           const index = points.indexOf(point)
-          return <text key={`time-${point.time}`} x={x(index)} y="218" textAnchor="middle" className="chart-axis-label">{forecastTime(point.time)}</text>
+          return <text key={`time-${point.time}`} x={x(index)} y="274" textAnchor="middle" className="chart-axis-label">{forecastTime(point.time)}</text>
         })}
       </svg>
       <div className="chart-legend"><span><i className="legend-temp" />기온 (°C)</span><span><i className="legend-rain" />강수확률 (%)</span><span className="chart-hint">그래프를 가리키거나 터치해 시간별 정보를 확인하세요</span></div>
@@ -251,7 +291,7 @@ function App() {
     const load = async () => {
       try {
         const [weatherResponse, airResponse] = await Promise.all([
-          fetch('https://api.open-meteo.com/v1/forecast?latitude=21.0285&longitude=105.8542&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7&timezone=Asia%2FBangkok'),
+          fetch('https://api.open-meteo.com/v1/forecast?latitude=21.0285&longitude=105.8542&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,weather_code,wind_speed_10m&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7&timezone=Asia%2FBangkok'),
           fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=21.0285&longitude=105.8542&current=pm10,pm2_5,us_aqi&timezone=Asia%2FBangkok'),
         ])
         if (!weatherResponse.ok || !airResponse.ok) throw new Error('날씨 정보를 불러오지 못했습니다.')
@@ -276,7 +316,9 @@ function App() {
         const hourly: HourlyForecast[] = weatherJson.hourly.time.slice(firstForecastHour, firstForecastHour + 24).map((time: string, index: number) => ({
           time,
           temperature: Math.round(weatherJson.hourly.temperature_2m[firstForecastHour + index]),
+          feelsLike: Math.round(weatherJson.hourly.apparent_temperature[firstForecastHour + index]),
           rainChance: weatherJson.hourly.precipitation_probability[firstForecastHour + index] ?? 0,
+          code: weatherJson.hourly.weather_code[firstForecastHour + index],
         }))
         const daily: DailyForecast[] = weatherJson.daily.time.slice(0, 7).map((date: string, index: number) => ({
           date,
@@ -317,6 +359,34 @@ function App() {
   const forecastMin = Math.min(...forecast.daily.map(day => day.min))
   const forecastMax = Math.max(...forecast.daily.map(day => day.max))
   const forecastRange = Math.max(forecastMax - forecastMin, 1)
+  const next24Min = Math.min(...forecast.hourly.map(point => point.temperature))
+  const next24Max = Math.max(...forecast.hourly.map(point => point.temperature))
+  const peakRainHour = forecast.hourly.reduce((peak, point) => point.rainChance > peak.rainChance ? point : peak, forecast.hourly[0])
+  const weekFirstHalf = forecast.daily.slice(0, 3).reduce((sum, day) => sum + day.max, 0) / Math.max(forecast.daily.slice(0, 3).length, 1)
+  const weekSecondHalf = forecast.daily.slice(-3).reduce((sum, day) => sum + day.max, 0) / Math.max(forecast.daily.slice(-3).length, 1)
+  const weeklyTrend = weekSecondHalf - weekFirstHalf > 1.5 ? '후반으로 갈수록 기온이 올라요' : weekSecondHalf - weekFirstHalf < -1.5 ? '주 후반에는 기온이 내려가요' : '이번 주 기온은 대체로 비슷해요'
+  const weeklyRainDays = forecast.daily.filter(day => day.rainChance >= 40 || day.code >= 51).length
+  const averageDailyRange = forecast.daily.reduce((sum, day) => sum + day.max - day.min, 0) / Math.max(forecast.daily.length, 1)
+  const weeklyAdvice = `${weeklyTrend}. ${weeklyRainDays ? `${weeklyRainDays}일은 우산을 챙기고` : '우산은 강수 변화를 확인해 준비하고'}, ${averageDailyRange >= 8 ? '아침저녁 큰 일교차에 얇은 겉옷을 준비하세요.' : '냉방 실내와 저녁에 대비해 얇은 겉옷을 챙기세요.'}`
+  const timeWindows = [
+    { label: '오전 출근·등교', start: 6, end: 10, center: 8 },
+    { label: '한낮 더위', start: 11, end: 15, center: 13 },
+    { label: '저녁 퇴근·외출', start: 17, end: 21, center: 19 },
+  ].map(window => {
+    const points = forecast.hourly.filter(point => {
+      const hour = Number(point.time.slice(11, 13))
+      return hour >= window.start && hour <= window.end
+    })
+    const nearest = forecast.hourly.reduce((best, point) =>
+      Math.abs(Number(point.time.slice(11, 13)) - window.center) < Math.abs(Number(best.time.slice(11, 13)) - window.center) ? point : best,
+    forecast.hourly[0])
+    const temps = points.length ? points.map(point => point.temperature) : [nearest.temperature]
+    const rain = points.length ? Math.max(...points.map(point => point.rainChance)) : nearest.rainChance
+    const feels = points.length
+      ? points.reduce((sum, point) => sum + point.feelsLike, 0) / points.length
+      : nearest.feelsLike
+    return { ...window, temperature: Math.round(temps.reduce((sum, value) => sum + value, 0) / temps.length), feelsLike: Math.round(feels), rainChance: rain }
+  })
   const mask = current.aqi > 150 ? 'KF94 마스크 필수' : current.aqi > 100 ? '보건용 마스크 권장' : current.aqi > 50 ? '민감한 분은 마스크 권장' : '마스크 미착용 가능'
   const pm10Quality = pollutantQuality(current.pm10, 54, 154, 254)
   const pm25Quality = pollutantQuality(current.pm25, 9, 35.4, 55.4)
@@ -436,9 +506,29 @@ function App() {
 
           {activeSection === 'forecast' && <section className="section-block forecast-section">
             <div className="section-heading"><div><div className="eyebrow">날씨 예보</div><h2>하노이 날씨 예보</h2><p>시간대별 변화와 앞으로의 한 주 날씨를 미리 확인하세요.</p></div><span className="place-count"><CloudSun size={14} /> 7일 예보</span></div>
+            <article className="forecast-brief-card">
+              <div className="forecast-brief-title"><span className="forecast-brief-icon"><CloudSun size={20} /></span><div><span>하루 계획을 위한 핵심 정보</span><h3>24시간 &amp; 주간 날씨 요약 브리핑</h3></div></div>
+              <div className="forecast-brief-stats">
+                <div><span>24시간 최저</span><strong>{next24Min}°C</strong></div>
+                <div><span>24시간 최고</span><strong>{next24Max}°C</strong></div>
+                <div><span>최대 강수 시간</span><strong>{peakRainHour.rainChance ? `${forecastTime(peakRainHour.time)} · ${peakRainHour.rainChance}%` : '비 소식 적음'}</strong></div>
+                <div><span>주간 기온 흐름</span><strong>{weeklyTrend}</strong></div>
+              </div>
+              <p className="forecast-brief-advice"><Umbrella size={16} />{weeklyAdvice}</p>
+            </article>
             <div className="forecast-card hourly-card">
-              <div className="forecast-card-heading"><div><strong>향후 24시간 예보 그래프</strong><span>기온과 강수확률을 시간대별로 확인해요.</span></div><span className="forecast-updated">{mode === 'live' && !usingSample ? '실시간 예보' : '하노이 예시 예보'}</span></div>
+              <div className="forecast-card-heading"><div><strong>향후 24시간 예보 그래프</strong><span>기온 곡선과 시간대별 강수 막대를 함께 확인하세요.</span></div><span className="forecast-updated">{mode === 'live' && !usingSample ? '실시간 예보' : '하노이 예시 예보'}</span></div>
               <HourlyChart points={forecast.hourly} />
+            </div>
+            <div className="time-window-card">
+              <div className="time-window-heading"><strong>시간대별 체감 포인트</strong><span>출근·한낮·퇴근 시간 계획에 참고하세요.</span></div>
+              <div className="time-window-grid">{timeWindows.map(window => (
+                <article className={`time-window-chip ${window.rainChance >= 50 ? 'time-window-rain' : window.feelsLike >= 34 ? 'time-window-warm' : ''}`} key={window.label}>
+                  <span className="time-window-label">{window.label} <small>{String(window.start).padStart(2, '0')}–{String(window.end).padStart(2, '0')}시</small></span>
+                  <strong>{window.temperature}°C <small>체감 {window.feelsLike}°C</small></strong>
+                  <span className="time-window-rain-chance"><CloudRain size={14} /> 강수 최대 {window.rainChance}%</span>
+                </article>
+              ))}</div>
             </div>
             <div className="forecast-card daily-card">
               <div className="forecast-card-heading"><div><strong>7일 주간 예보</strong><span>이번 주 기온 범위와 비 소식을 확인해요.</span></div><div className="temp-range-key"><i /> 최저 · 최고 기온</div></div>
@@ -448,6 +538,7 @@ function App() {
                 <span className={`daily-weather-icon ${day.rainChance >= 50 ? 'rainy' : ''}`}>{weatherIcon(day.code)}</span>
                 <span className="daily-rain"><CloudRain size={12} /> {day.rainChance}%</span>
                 <div className="daily-temperatures"><span>{day.min}°</span><div className="daily-range-track"><i style={{ left: `${((day.min - forecastMin) / forecastRange) * 100}%`, width: `${Math.max(8, ((day.max - day.min) / forecastRange) * 100)}%` }} /></div><b>{day.max}°</b></div>
+                <span className="daily-weather-note">{dayWeatherNote(day)}</span>
               </article>)}</div>
               <div className="daily-range-labels"><span>{forecastMin}°C</span><span>{forecastMax}°C</span></div>
             </div>

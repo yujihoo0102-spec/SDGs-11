@@ -1090,3 +1090,88 @@ body { color: #202b3c; font-size: 16px; line-height: 1.6; }
   .hospital-reference-intro, .hospital-contact-note { font-size: 12px; }
   .hospital-reference-grid strong { font-size: 13px; }
 }
+.forecast-section { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.forecast-section > .section-heading { grid-column: auto; margin-bottom: 0; }
+.forecast-brief-card, .time-window-card {
+  grid-column: 1 / -1;
+  padding: 23px 25px;
+  border: 1px solid #d5e5ec;
+  border-radius: 14px;
+  background: linear-gradient(125deg, #f3f9fc 0%, #fbfdff 58%, #fffaf1 100%);
+}
+.forecast-brief-title { display: flex; align-items: center; gap: 12px; }
+.forecast-brief-icon { display: grid; width: 43px; height: 43px; place-items: center; border: 1px solid #cde2ef; border-radius: 11px; color: #176f9e; background: #e8f5fb; }
+.forecast-brief-title > div > span { color: #52677a; font-size: 12px; }
+.forecast-brief-title h3 { margin: 3px 0 0; color: #20394c; font-size: 20px; }
+.forecast-brief-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+.forecast-brief-stats > div { display: grid; min-height: 77px; align-content: center; gap: 7px; padding: 12px 14px; border: 1px solid #deeaef; border-radius: 9px; background: rgb(255 255 255 / 84%); }
+.forecast-brief-stats > div > span { color: #52677a; font-size: 12px; }
+.forecast-brief-stats strong { color: #244b62; font-size: 17px; line-height: 1.35; }
+.forecast-brief-stats > div:nth-child(3) strong { color: #24769b; }
+.forecast-brief-advice { display: flex; align-items: flex-start; gap: 9px; margin: 15px 0 0; padding: 11px 13px; border-radius: 8px; color: #70511e; background: #fff3dc; font-size: 14px; line-height: 1.6; }
+.forecast-brief-advice svg { flex: 0 0 auto; margin-top: 2px; color: #bf7a1d; }
+.forecast-card { padding: 26px; border-radius: 14px; }
+.forecast-card-heading strong { font-size: 17px; }
+.forecast-card-heading > div > span { font-size: 14px; }
+.hourly-chart-wrap { margin-top: 18px; }
+.hourly-chart { min-height: 300px; }
+.chart-axis-label { fill: #46596c; font-size: 13px; }
+.chart-tooltip { top: 5px; min-width: 190px; padding: 11px 13px; border-color: #b7d5e2; border-radius: 9px; box-shadow: 0 8px 24px rgb(34 65 82 / 12%); }
+.chart-tooltip strong { color: #20394c; font-size: 14px; }
+.chart-tooltip span { color: #41576a; font-size: 13px; line-height: 1.5; }
+.hourly-chart circle { cursor: crosshair; }
+.hourly-chart circle:focus { outline: none; filter: drop-shadow(0 0 3px #c87920); }
+.chart-legend { gap: 18px; padding: 4px 4%; font-size: 13px; }
+.chart-legend i { width: 10px; height: 10px; }
+.legend-rain { background: #78b8d7; }
+.time-window-card { border-color: #dce8df; background: linear-gradient(125deg, #f5faf7 0%, #fff 100%); }
+.time-window-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.time-window-heading strong { color: #24483f; font-size: 17px; }
+.time-window-heading > span { color: #5b6d6a; font-size: 13px; }
+.time-window-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 15px; }
+.time-window-chip { display: grid; gap: 9px; padding: 16px; border: 1px solid #d8e6e2; border-radius: 10px; background: #fff; }
+.time-window-chip.time-window-warm { border-color: #ecd6ad; background: #fffaf1; }
+.time-window-chip.time-window-rain { border-color: #c5ddec; background: #f2f9fd; }
+.time-window-label { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 5px; color: #344a5b; font-size: 14px; font-weight: 650; }
+.time-window-label small { color: #6a7b89; font-size: 12px; font-weight: 500; }
+.time-window-chip > strong { color: #a45b1a; font-size: 22px; }
+.time-window-chip > strong small { color: #5b6874; font-size: 13px; font-weight: 500; }
+.time-window-rain-chance { display: flex; align-items: center; gap: 6px; color: #26749a; font-size: 13px; }
+.daily-card { border-color: #d4e4ec; background: linear-gradient(145deg, #fff 0%, #f8fbfd 100%); }
+.daily-forecast-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 11px; margin-top: 20px; }
+.daily-forecast { min-height: 205px; justify-content: flex-start; gap: 4px; padding: 15px 10px; border-color: #d8e5eb; border-radius: 10px; }
+.daily-weekday { font-size: 14px; }
+.daily-date { font-size: 12px; }
+.daily-weather-icon { height: 42px; margin-top: 5px; }
+.daily-weather-icon svg { width: 25px; height: 25px; }
+.daily-rain { font-size: 12px; }
+.daily-temperatures { gap: 5px; margin-top: 12px; }
+.daily-temperatures > span, .daily-temperatures > b { font-size: 12px; }
+.daily-range-track, .daily-range-track i { height: 6px; }
+.daily-range-labels { padding-top: 10px; font-size: 11px; }
+.daily-weather-note { min-height: 34px; margin-top: 8px; color: #52677a; font-size: 11px; line-height: 1.45; text-align: center; }
+@media (max-width: 900px) {
+  .forecast-brief-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .daily-forecast-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .forecast-section { gap: 14px; }
+  .forecast-brief-card, .time-window-card { padding: 17px; border-radius: 11px; }
+  .forecast-brief-title h3 { font-size: 17px; }
+  .forecast-brief-stats { gap: 8px; margin-top: 15px; }
+  .forecast-brief-stats > div { min-height: 70px; padding: 10px; }
+  .forecast-brief-stats > div > span { font-size: 11px; }
+  .forecast-brief-stats strong { font-size: 15px; }
+  .forecast-brief-advice { font-size: 13px; }
+  .forecast-card { padding: 16px; }
+  .hourly-chart { min-height: 220px; }
+  .chart-legend { flex-wrap: wrap; gap: 9px; font-size: 11px; }
+  .chart-legend .chart-hint { display: none; }
+  .time-window-grid { grid-template-columns: 1fr; gap: 8px; }
+  .time-window-chip { grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px; }
+  .time-window-label { grid-column: 1 / -1; }
+  .time-window-rain-chance { justify-content: flex-end; font-size: 12px; }
+  .daily-forecast-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .daily-forecast { min-height: 185px; }
+  .daily-weather-note { font-size: 12px; }
+}
