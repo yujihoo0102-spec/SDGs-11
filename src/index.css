@@ -537,3 +537,182 @@ svg { flex-shrink: 0; stroke-width: 1.75; }
   .place-actions { align-items: flex-start; flex-direction: column; }
   .chart-axis-label { font-size: 11px; }
 }
+
+/* App-style section navigation and focused content layout */
+.main-content { margin-left: 0; }
+.topbar {
+  height: 68px;
+  padding: 0 max(24px, calc((100vw - 1024px) / 2));
+}
+.header-brand-name { font-size: 18px; letter-spacing: -.5px; }
+.mode-switch { gap: 4px; padding: 4px; border-radius: 9px; }
+.mode-switch button { padding: 8px 13px; border-radius: 6px; font-size: 12px; }
+.section-tabs {
+  position: sticky;
+  z-index: 9;
+  top: 68px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgb(255 255 255 / 96%);
+  backdrop-filter: blur(10px);
+}
+.section-tab {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 17px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #59656d;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 550;
+  white-space: nowrap;
+  transition: color .16s ease, background .16s ease, border-color .16s ease;
+}
+.section-tab:hover { color: var(--ink); background: #f5f7f6; }
+.section-tab.selected { border-color: #dce8e4; color: var(--teal); background: #edf5f3; font-weight: 650; }
+.page-wrap { width: min(100%, 1024px); padding: 30px 28px 42px; }
+.page-heading { margin-bottom: 17px; }
+.page-heading h1 { font-size: 28px; letter-spacing: -.8px; }
+.page-heading p { font-size: 13px; }
+.section-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-bottom: 22px;
+  padding: 16px 18px;
+  border: 1px solid #dfe9e5;
+  border-radius: 10px;
+  color: #3c5a53;
+  background: #f0f6f4;
+}
+.section-summary > span {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 5px;
+  color: var(--teal);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 650;
+}
+.section-summary p { margin: 2px 0 0; font-size: 13px; line-height: 1.6; }
+.active-panel { min-height: 300px; }
+.hero-grid { gap: 16px; }
+.weather-card, .score-card, .brief-outfit, .air-card, .prep-card, .forecast-card, .health-section {
+  border-radius: 11px;
+}
+.weather-card, .score-card { padding: 20px; }
+.brief-outfit, .air-card, .prep-card, .forecast-card { padding: 18px; }
+.section-block { margin-top: 30px; }
+.section-heading { margin-bottom: 16px; }
+.section-heading h2 { font-size: 18px; }
+.section-heading p { font-size: 12px; }
+.card-overline { font-size: 11px; }
+.weather-location { font-size: 14px; }
+.weather-date, .weather-foot { font-size: 10px; }
+.weather-stats span { font-size: 10px; }
+.weather-stats strong { font-size: 14px; }
+.score-top h2, .brief-outfit h2 { font-size: 15px; }
+.score-caption strong { font-size: 12px; }
+.score-caption span, .score-factors span, .score-factors b, .score-tip { font-size: 10px; }
+.brief-outfit > p { font-size: 16px; }
+.brief-outfit-detail > div, .brief-outfit-detail b { font-size: 10px; }
+.forecast-card-heading strong { font-size: 12px; }
+.forecast-card-heading > div > span, .forecast-updated, .temp-range-key { font-size: 10px !important; }
+.chart-legend { font-size: 10px; }
+.daily-forecast { padding: 11px 7px; }
+.daily-weekday { font-size: 10px; }
+.daily-date, .daily-rain, .daily-temperatures > span, .daily-temperatures > b { font-size: 9px; }
+.air-card-heading, .pollutant-bottom { font-size: 10px; }
+.pollutant-reading { font-size: 28px; }
+.prep-title strong { font-size: 12px; }
+.prep-title span, .outfit-row b, .outfit-row > div span, .mask-note b, .mask-note > div:nth-child(2) span { font-size: 10px; }
+.essential-list b { font-size: 10px; }
+.essential-list small, .essentials-tip { font-size: 9px; }
+.area-filters button { padding: 9px 12px; font-size: 11px; }
+.category-select select { font-size: 10px; }
+.place-card { padding: 16px; border-radius: 9px; }
+.place-card h3 { font-size: 13px; line-height: 1.45; }
+.place-meta, .place-hours { font-size: 10px; }
+.place-details { margin: 7px 0 12px; }
+.place-details > summary { color: var(--teal); cursor: pointer; font-size: 10px; font-weight: 600; }
+.place-details[open] > summary { margin-bottom: 9px; }
+.place-description { min-height: 0; font-size: 10px; }
+.place-resident-access { padding: 9px; }
+.place-resident-access strong, .place-resident-access span, .place-recommendations p { font-size: 9px; }
+.place-actions { gap: 10px; }
+.place-select, .place-map-link { font-size: 10px; }
+.place-map-panel { border-radius: 9px; }
+.place-map-heading { padding: 15px; }
+.place-map-heading span, .place-map-heading small { font-size: 10px; }
+.place-map-heading strong { font-size: 13px; }
+.map-directions-link { font-size: 10px; }
+.health-section { padding: 20px; }
+.health-card { padding: 13px; border-radius: 8px; }
+.disease-season, .health-card-description { font-size: 9px; }
+.health-card-title { font-size: 11px; }
+.risk-badge { font-size: 9px; }
+.disease-detail, .daily-health-card { padding: 16px; border-radius: 8px; }
+.detail-overline, .detail-block h4, .symptom-list li, .prevention-list li { font-size: 10px; }
+.detail-heading h3 { font-size: 15px; }
+.local-advice { padding: 11px; }
+.local-advice summary { cursor: pointer; list-style: none; }
+.local-advice summary::-webkit-details-marker { display: none; }
+.local-advice-title { font-size: 10px; }
+.local-advice p { font-size: 10px; }
+.daily-health-heading h3 { font-size: 11px; }
+.daily-health-heading div > span, .daily-health-task { font-size: 9px; }
+.health-disclaimer { font-size: 9px; }
+.footer { font-size: 9px; }
+
+@media (max-width: 700px) {
+  .topbar { height: 60px; padding: 0 14px; }
+  .header-brand-name { font-size: 16px; }
+  .mode-switch button { padding: 7px 9px; font-size: 10px; }
+  .section-tabs {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 30;
+    justify-content: space-around;
+    gap: 0;
+    padding: 7px 5px calc(7px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    border-bottom: 0;
+    box-shadow: 0 -5px 20px rgb(30 41 59 / 5%);
+  }
+  .section-tab {
+    min-width: 0;
+    min-height: 52px;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    padding: 5px 2px;
+    border-radius: 7px;
+    font-size: 9px;
+  }
+  .section-tab svg { width: 18px; height: 18px; }
+  .page-wrap { padding: 22px 15px calc(94px + env(safe-area-inset-bottom)); }
+  .page-heading h1 { font-size: 23px; }
+  .page-heading p { font-size: 11px; }
+  .section-summary { gap: 9px; margin-bottom: 17px; padding: 12px; }
+  .section-summary > span { font-size: 9px; }
+  .section-summary p { font-size: 11px; }
+  .section-block { margin-top: 22px; }
+  .hero-grid { gap: 12px; }
+  .weather-card, .score-card, .brief-outfit, .air-card, .prep-card, .forecast-card { padding: 15px; }
+  .section-heading h2 { font-size: 15px; }
+  .daily-forecast { padding: 9px 5px; }
+  .health-section { padding: 14px; }
+}
+@media (max-width: 430px) {
+  .page-wrap { padding-right: 12px; padding-left: 12px; }
+  .mode-switch button { padding: 7px 7px; font-size: 9px; }
+  .section-tab { font-size: 8px; }
+  .section-tab svg { width: 17px; height: 17px; }
+}
