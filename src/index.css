@@ -1175,3 +1175,73 @@ body { color: #202b3c; font-size: 16px; line-height: 1.6; }
   .daily-forecast { min-height: 185px; }
   .daily-weather-note { font-size: 12px; }
 }
+.weather-alert-center { margin: 0 0 27px; padding: 20px; border: 1px solid #dfe7e9; border-radius: 14px; background: #fff; }
+.weather-alert-center.weather-all-clear { border-color: #cde5dd; background: linear-gradient(120deg, #f3faf6 0%, #fbfdfc 100%); }
+.weather-alert-center.has-weather-alerts { border-color: #e7d2a8; background: linear-gradient(135deg, #fffaf0 0%, #fff 62%); }
+.weather-alert-center-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.weather-alert-kicker { display: flex; align-items: center; gap: 7px; color: #52677a; font-size: 13px; font-weight: 650; }
+.weather-all-clear .weather-alert-kicker { color: #08785f; }
+.has-weather-alerts .weather-alert-kicker { color: #8d510e; }
+.weather-alert-center-heading h2 { margin: 5px 0; color: #263648; font-size: 19px; line-height: 1.4; }
+.weather-alert-center-heading p { margin: 0; color: #52606a; font-size: 13px; line-height: 1.55; }
+.weather-alert-toggle { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 9px 11px; border: 1px solid #dfcfad; border-radius: 7px; color: #79500f; background: #fff; font-size: 13px; font-weight: 650; }
+.weather-all-clear .weather-alert-center-heading h2 { color: #155e52; font-size: 16px; }
+.weather-alert-list { display: grid; gap: 12px; margin-top: 17px; }
+.weather-alert-card { padding: 17px; border: 1px solid #e8cfaa; border-left: 5px solid #c17b16; border-radius: 10px; background: #fff; }
+.weather-alert-card.alert-heat { border-color: #edc5b8; border-left-color: #c64b48; background: #fffafa; }
+.weather-alert-card.alert-rain { border-color: #c4ddeb; border-left-color: #24749d; background: #fafdff; }
+.weather-alert-card.alert-air { border-color: #e8c1bc; border-left-color: #bd4149; background: #fffafa; }
+.weather-alert-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.weather-alert-title { display: flex; align-items: flex-start; gap: 9px; }
+.weather-alert-title svg { flex: 0 0 auto; margin-top: 3px; color: #a45b1a; }
+.alert-heat .weather-alert-title svg, .alert-air .weather-alert-title svg { color: #b64145; }
+.alert-rain .weather-alert-title svg { color: #24749d; }
+.weather-alert-title h3 { margin: 0; color: #29394b; font-size: 17px; line-height: 1.45; }
+.weather-alert-meta { display: flex; flex: 0 0 auto; align-items: center; gap: 9px; color: #5b6874; font-size: 12px; }
+.severity-badge { padding: 4px 8px; border: 1px solid #ecd09b; border-radius: 20px; color: #80530f; background: #fff3dc; font-size: 12px; font-weight: 700; }
+.severity-위험 { border-color: #e6b3ad; color: #a5333b; background: #ffebe9; }
+.weather-alert-cause { margin: 11px 0; color: #475569; font-size: 14px; line-height: 1.6; }
+.weather-alert-actions { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; counter-reset: alert-action; }
+.weather-alert-actions li { display: flex; align-items: flex-start; gap: 9px; color: #344256; font-size: 13px; line-height: 1.6; counter-increment: alert-action; }
+.weather-alert-actions li::before { display: grid; width: 21px; height: 21px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: #fff; background: #a66c14; content: counter(alert-action); font-size: 11px; font-weight: 700; }
+.alert-heat .weather-alert-actions li::before, .alert-air .weather-alert-actions li::before { background: #b64145; }
+.alert-rain .weather-alert-actions li::before { background: #24749d; }
+.alert-shelter-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 13px; padding: 9px 12px; border: 0; border-radius: 7px; color: #fff; background: #3156a4; font-size: 13px; font-weight: 650; }
+.alert-shelter-link:hover { background: #263f85; }
+.weather-checklists { margin-top: 17px; padding-top: 15px; border-top: 1px solid #e5e9e9; }
+.weather-checklist-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.weather-checklist-heading strong { color: #334455; font-size: 15px; }
+.weather-checklist-heading span { color: #667586; font-size: 12px; }
+.weather-checklist-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-top: 11px; }
+.weather-checklist { padding: 12px; border: 1px solid #e5e8e8; border-radius: 9px; background: #fff; }
+.weather-checklist.checklist-rain { border-color: #cfe2ed; background: #f5fafc; }
+.weather-checklist.checklist-heat { border-color: #efd9ae; background: #fffbf3; }
+.weather-checklist.checklist-air { border-color: #ead0ce; background: #fff8f7; }
+.weather-checklist h3 { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; color: #344256; font-size: 13px; }
+.checklist-rain h3 svg { color: #24749d; }
+.checklist-heat h3 svg { color: #b87917; }
+.checklist-air h3 svg { color: #b64145; }
+.weather-check-task { display: flex; width: 100%; align-items: flex-start; gap: 8px; padding: 6px 0; border: 0; color: #48586a; background: transparent; text-align: left; font-size: 12px; line-height: 1.5; }
+.weather-check-task > span { display: grid; width: 17px; height: 17px; flex: 0 0 auto; place-items: center; margin-top: 1px; border: 1px solid #aebdc3; border-radius: 4px; color: white; background: white; }
+.weather-check-task.weather-check-complete { color: #68776f; text-decoration: line-through; }
+.weather-check-task.weather-check-complete > span { border-color: #08785f; background: #08785f; }
+.chevron-open { transform: rotate(180deg); }
+@media (max-width: 700px) {
+  .weather-alert-center { margin-bottom: 20px; padding: 14px; border-radius: 11px; }
+  .weather-alert-center-heading { align-items: flex-start; }
+  .weather-alert-center-heading h2 { font-size: 16px; }
+  .weather-alert-center-heading p { font-size: 12px; }
+  .weather-alert-toggle { gap: 4px; padding: 7px; font-size: 11px; }
+  .weather-alert-card { padding: 13px; }
+  .weather-alert-card-heading { flex-direction: column; }
+  .weather-alert-title h3 { font-size: 15px; }
+  .weather-alert-meta { font-size: 11px; }
+  .weather-alert-cause { font-size: 13px; }
+  .weather-alert-actions li { font-size: 12px; }
+  .alert-shelter-link { font-size: 12px; }
+  .weather-checklist-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 430px) {
+  .weather-alert-center-heading { flex-direction: column; }
+  .weather-alert-toggle { align-self: flex-end; }
+}

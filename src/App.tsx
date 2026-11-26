@@ -277,6 +277,8 @@ function App() {
   const [mode, setMode] = useState<Mode>('live')
   const [activeSection, setActiveSection] = useState<'briefing' | 'forecast' | 'places' | 'health'>('briefing')
   const [airDetailsOpen, setAirDetailsOpen] = useState(false)
+  const [alertsCollapsed, setAlertsCollapsed] = useState(false)
+  const [completedWeatherChecks, setCompletedWeatherChecks] = useState<string[]>([])
   const [area, setArea] = useState('전체 보기')
   const [category, setCategory] = useState('전체 장소')
   const [selectedPlace, setSelectedPlace] = useState(places[0].name)
@@ -350,6 +352,39 @@ function App() {
   const isRain = current.rainChance >= 70 || current.rainfall >= 10
   const isHeat = current.temperature >= 35
   const airBad = current.aqi > 100
+  const weatherAlerts = [
+    ...(current.temperature >= 35 || mode === 'heat' ? [{
+      id: 'heat',
+      title: '폭염 징후 감지 — 체감온도 상승과 온열질환 위험',
+      cause: `기온 ${current.temperature}°C · 체감 ${current.feelsLike}°C${mode === 'heat' ? ' · 폭염 시뮬레이션' : ''}`,
+      severity: current.temperature >= 38 ? '위험' : '경계',
+      actions: ['한낮 야외 활동과 격렬한 운동을 줄이고 그늘·냉방 공간에서 쉬세요.', '갈증이 나기 전부터 물을 조금씩 자주 마시고 동행자의 상태를 확인하세요.', '혼란·실신·뜨거운 피부 등 응급 징후가 있으면 즉시 115에 연락하세요.'],
+    }] : []),
+    ...(current.rainChance >= 60 || current.rainfall >= 10 || mode === 'rain' ? [{
+      id: 'rain',
+      title: '폭우·호우 징후 감지 — 강수와 돌발 침수 위험',
+      cause: `강수 확률 ${current.rainChance}% · 현재 강수량 ${current.rainfall} mm${mode === 'rain' ? ' · 폭우 시뮬레이션' : ''}`,
+      severity: current.rainChance >= 80 || current.rainfall >= 20 ? '위험' : '경계',
+      actions: ['저지대·지하차도·침수된 도로와 지하 공간 이동을 피하세요.', '안전한 실내에 머물고 필요하면 가까운 대피·휴식 거점으로 이동하세요.', '우산·방수 신발을 준비하되 물이 흐르는 도로는 건너지 말고 현지 안내를 따르세요.'],
+    }] : []),
+    ...(current.aqi >= 150 || current.pm25 >= 55.5 ? [{
+      id: 'air',
+      title: '고농도 미세먼지 징후 감지 — 호흡기 자극 주의',
+      cause: `US AQI ${current.aqi} · PM2.5 ${current.pm25} μg/m³`,
+      severity: current.aqi >= 200 || current.pm25 >= 100 ? '위험' : '경계',
+      actions: ['외출 시 얼굴에 밀착되는 KF94 등 보건용 마스크를 착용하세요.', '장시간 실외 체류와 격렬한 운동을 줄이고 창문을 닫아 공기청정기를 가동하세요.', '기침·호흡곤란 등 증상을 살피고 불편감이 지속되면 의료진과 상담하세요.'],
+    }] : []),
+  ] as const
+  const weatherChecklists = [
+    { id: 'rain', label: '폭우 대비', icon: CloudRain, tasks: ['대피 거점·이동 경로 확인', '저지대·지하차도 피하기'] },
+    { id: 'heat', label: '폭염 대비', icon: Sun, tasks: ['물병 준비·수분 자주 보충', '한낮 야외 활동 줄이기'] },
+    { id: 'air', label: '미세먼지 대비', icon: Wind, tasks: ['KF94 마스크 챙기기', '창문 닫고 공기청정기 확인'] },
+  ]
+  const toggleWeatherCheck = (task: string) => {
+    setCompletedWeatherChecks(current => current.includes(task)
+      ? current.filter(item => item !== task)
+      : [...current, task])
+  }
   const score = Math.max(12, Math.min(98,
     100 - (isRain ? 32 : current.rainChance >= 40 ? 12 : 0) - (isHeat ? 27 : current.temperature >= 32 ? 10 : 0) -
     (current.aqi > 150 ? 25 : current.aqi > 100 ? 16 : current.aqi > 50 ? 7 : 0) - (current.humidity > 85 ? 10 : 0)))
@@ -476,6 +511,43 @@ function App() {
         </nav>
 
         <div className="page-wrap">
+          <section className={`weather-alert-center ${weatherAlerts.length ? 'has-weather-alerts' : 'weather-all-clear'}`} aria-labelledby="weather-alert-heading">
+            <div className="weather-alert-center-heading">
+              <div>
+                <span className="weather-alert-kicker"><ShieldAlert size={16} /> 자동 기상·대기질 모니터링</span>
+                <h2 id="weather-alert-heading">{weatherAlerts.length ? `이상기후 공지 · ${weatherAlerts.length}건` : '현재 특별한 이상기후 징후가 없습니다'}</h2>
+                <p>{weatherAlerts.length ? '현재 하노이 조건과 선택한 시뮬레이션을 반영한 안내입니다.' : `하노이 기온 ${current.temperature}°C · 강수 ${current.rainChance}% · AQI ${current.aqi}. 현재 기상·대기질은 비교적 안정적입니다.`}</p>
+              </div>
+              {weatherAlerts.length > 0 && <button className="weather-alert-toggle" type="button" aria-expanded={!alertsCollapsed} aria-controls="weather-alert-list" onClick={() => setAlertsCollapsed(collapsed => !collapsed)}>{alertsCollapsed ? '공지 펼치기' : '공지 접기'} <ChevronDown size={16} className={alertsCollapsed ? '' : 'chevron-open'} /></button>}
+            </div>
+            {weatherAlerts.length > 0 && !alertsCollapsed && <div className="weather-alert-list" id="weather-alert-list">
+              {weatherAlerts.map(alert => (
+                <article className={`weather-alert-card alert-${alert.id}`} key={alert.id}>
+                  <div className="weather-alert-card-heading">
+                    <div className="weather-alert-title"><ShieldAlert size={19} /><h3>{alert.title}</h3></div>
+                    <div className="weather-alert-meta"><span className={`severity-badge severity-${alert.severity}`}>{alert.severity}</span><span>하노이 {new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit', hour12: false }).format(now)} 발령</span></div>
+                  </div>
+                  <p className="weather-alert-cause">{alert.cause}</p>
+                  <ol className="weather-alert-actions">{alert.actions.map(action => <li key={action}>{action}</li>)}</ol>
+                  <button className="alert-shelter-link" type="button" onClick={() => setActiveSection('places')}>안전 대피·한인 거점 탭으로 이동 <ArrowUpRight size={16} /></button>
+                </article>
+              ))}
+            </div>}
+            <div className="weather-checklists">
+              <div className="weather-checklist-heading"><strong>이상기후 대비 행동 체크</strong><span>필요한 준비를 눌러 완료 표시하세요.</span></div>
+              <div className="weather-checklist-grid">{weatherChecklists.map(list => {
+                const ChecklistIcon = list.icon
+                return <article className={`weather-checklist checklist-${list.id}`} key={list.id}>
+                  <h3><ChecklistIcon size={17} />{list.label}</h3>
+                  {list.tasks.map(task => {
+                    const checked = completedWeatherChecks.includes(task)
+                    return <button className={`weather-check-task ${checked ? 'weather-check-complete' : ''}`} type="button" role="checkbox" aria-checked={checked} key={task} onClick={() => toggleWeatherCheck(task)}><span>{checked && <Check size={12} />}</span>{task}</button>
+                  })}
+                </article>
+              })}</div>
+            </div>
+          </section>
+
           <section className="page-heading">
             <div><div className="eyebrow"><MapPin size={13} /> 하노이 · SDGs 11</div><h1>{sections.find(section => section.id === activeSection)?.label}</h1><p>{now.toLocaleDateString('ko-KR', { timeZone: 'Asia/Bangkok', month: 'long', day: 'numeric', weekday: 'long' })} · 지속가능한 도시를 위한 오늘의 기후·안전 정보</p></div>
           </section>
@@ -484,7 +556,6 @@ function App() {
           <div className="active-panel" role="tabpanel" id={`section-panel-${activeSection}`} aria-labelledby={`section-tab-${activeSection}`}>
 
           {activeSection === 'briefing' && <>
-          {(isRain || isHeat || airBad) && <div className={`alert-banner ${isRain ? 'rain-alert' : isHeat ? 'heat-alert' : 'air-alert'}`}><div className="alert-icon"><ShieldAlert size={20} /></div><div><strong>{isRain ? '폭우 주의 — 실내 대피 장소를 미리 확인하세요' : isHeat ? '폭염 주의 — 한낮 야외 활동을 피하고 수분을 보충하세요' : '대기질 나쁨 — 외출 시 보건용 마스크를 착용하세요'}</strong><span>{isRain ? `강수 확률 ${current.rainChance}% · 실내에 머물고 외출 시 우산을 꼭 챙기세요.` : isHeat ? `${current.temperature}°C · 그늘에서 쉬고 가까운 실내 공간을 이용해 주세요.` : `미국 AQI ${current.aqi} · 민감군은 장시간 야외 활동을 줄여 주세요.`}</span></div><button type="button" onClick={() => setActiveSection('places')}>대피 장소 보기 <ArrowUpRight size={15} /></button></div>}
           <section id="오늘" className="hero-grid">
             <div className={`weather-card ${isRain ? 'weather-rain' : isHeat ? 'weather-heat' : 'weather-clear'}`}>
               <div className="weather-card-top"><div><span className="card-overline">현재 날씨</span><div className="weather-location"><MapPin size={15} /> 하노이, 베트남 <ChevronDown size={14} /></div></div><div className="weather-date">{now.toLocaleDateString('ko-KR', { timeZone: 'Asia/Bangkok', month: 'long', day: 'numeric', weekday: 'long' })}</div></div>
