@@ -42,8 +42,9 @@ type Disease = {
   name: string
   text: string
   icon: typeof Bug
+  background: string
   symptoms: string[]
-  prevention: string[]
+  preventionStages: { label: string; steps: string[] }[]
   localAdvice: string
 }
 type RiskLevel = '주의' | '경계' | '높음'
@@ -58,44 +59,69 @@ const diseases: Disease[] = [
     name: '뎅기열',
     text: '비가 오고 습한 날에는 모기 노출을 줄이세요.',
     icon: Bug,
-    symptoms: ['갑작스러운 고열과 심한 두통', '눈 뒤쪽 통증, 근육·관절통', '메스꺼움 또는 피부 발진'],
-    prevention: ['노출된 피부에 모기 기피제를 제품 설명에 따라 바르기', '긴 소매·긴 바지를 입고 방충망이나 모기장을 활용하기', '집 주변의 화분 받침·용기 등 고인 물을 비우기'],
-    localAdvice: '고열이 나면 진료를 받으면서 뎅기열 가능성을 알리세요. 뎅기열이 의심될 때는 출혈 위험 때문에 이부프로펜·아스피린을 복용하지 말고, 해열제 선택은 의료진이나 약사에게 확인하세요. 심한 복통, 반복 구토, 잇몸 출혈, 호흡곤란이 있으면 즉시 응급 진료를 받으세요.',
+    background: '하노이의 우기와 고온다습한 날씨에는 물이 고인 곳에서 모기가 번식하기 쉽습니다. 뎅기열 매개 모기는 낮에도 활동하므로 주간 외출과 주거지 주변 노출을 함께 줄이세요.',
+    symptoms: ['갑작스러운 고열과 심한 두통', '눈 뒤쪽 통증, 근육·관절통', '메스꺼움 또는 피부 발진', '심한 복통·반복 구토·잇몸 출혈(위험 신호)'],
+    preventionStages: [
+      { label: '외출 전', steps: ['DEET 또는 이카리딘 성분 기피제를 제품 표시와 사용 연령에 맞게 바르기', '팔·다리를 덮는 얇고 밝은색 긴 옷 선택하기'] },
+      { label: '외출 중', steps: ['모기가 많은 녹지·그늘에서는 낮에도 기피제를 표시된 간격에 따라 덧바르기', '방충망이 없는 곳에서는 모기장·선풍기로 모기 접근 줄이기'] },
+      { label: '생활 습관', steps: ['화분 받침·양동이·배수 용기 등 고인 물을 주기적으로 비우기', '물 저장 용기는 덮고 집 주변 방충망 상태 확인하기'] },
+    ],
+    localAdvice: '뎅기열이 의심되면 의료기관에 연락해 진료와 혈액검사 필요성을 확인하세요. 출혈 위험 때문에 아스피린·이부프로펜 등 NSAIDs는 복용하지 마세요. 해열·통증 조절은 의료진 또는 약사와 확인한 뒤 아세트아미노펜(파라세타몰)을 제품 표시 용량대로만 사용하세요. 간 질환이 있거나 다른 복합약을 복용 중이면 먼저 전문가에게 확인하세요. 심한 복통, 지속 구토, 출혈, 호흡곤란, 심한 무기력은 즉시 응급 진료가 필요합니다.',
   },
   {
     id: 'respiratory',
     name: '급성 호흡기 질환·천식',
     text: '대기질이 나쁘거나 습도 변화가 큰 날 호흡기를 보호하세요.',
     icon: Wind,
-    symptoms: ['기침·콧물 또는 목 통증', '쌕쌕거림이나 가슴 답답함', '숨이 차거나 평소보다 심해지는 천식 증상'],
-    prevention: ['AQI가 나쁜 날에는 외출과 격한 야외 운동을 줄이고 보건용 마스크 착용하기', '외출 후 손을 씻고, 코 세척이 필요하면 멸균 생리식염수를 사용하기', '실내를 환기하고 적정 습도를 유지하며 처방받은 흡입기를 챙기기'],
-    localAdvice: '천식이 있다면 평소 처방받은 흡입기와 복용 정보를 휴대하고, 가까운 약국에서 약을 살 때 성분·용량을 확인하세요. 호흡곤란이 심하거나 흡입기로 호전되지 않으면 지체하지 말고 응급 진료를 받으세요.',
+    background: '하노이 건기에는 대기 정체와 교통·공사 먼지로 미세먼지 농도가 오를 수 있고, 오염물질과 습도 변화가 눈·코·목 점막을 자극합니다. 천식·알레르기·심폐질환이 있다면 더 민감할 수 있습니다.',
+    symptoms: ['눈·코·목 따가움, 재채기·콧물', '마른기침 또는 목 통증', '쌕쌕거림·가슴 답답함', '호흡곤란 또는 평소보다 심해진 천식 증상'],
+    preventionStages: [
+      { label: '외출 전', steps: ['AQI가 나쁜 날에는 외출·야외 운동 시간을 줄이고 실내 활동 선택하기', '필요한 외출에는 얼굴에 밀착되는 KF94 등 보건용 마스크 준비하기'] },
+      { label: '외출 중', steps: ['민감군은 AQI 101 이상에서 특히 장시간·격렬한 활동 피하기', '마스크를 코와 턱까지 밀착하고 오염이 심한 도로변 체류 줄이기'] },
+      { label: '귀가 후·실내', steps: ['손·얼굴을 씻고 코 세척은 멸균·증류수 또는 끓였다 식힌 물로 하기', '바깥 공기질이 나쁠 때는 창문을 닫고 공기청정기를 가동하며 필터 확인하기'] },
+    ],
+    localAdvice: '천식 환자는 평소 처방받은 흡입기와 행동 계획을 따르세요. 일반 수돗물로 코 세척을 하지 말고 안전한 물을 사용하세요. 숨이 차거나 흉통이 있거나 입술이 파래지는 경우, 처방 흡입기로 호전되지 않는 경우 즉시 응급 진료를 받으세요. 증상이 지속되면 의료진에게 AQI와 증상 시작 시점을 알려 주세요.',
   },
   {
     id: 'flu',
     name: '계절성 독감',
     text: '환절기와 사람이 많은 실내에서는 호흡기 감염 예방에 신경 써요.',
     icon: ShieldAlert,
-    symptoms: ['갑자기 시작되는 발열과 오한', '기침·인후통', '근육통과 심한 피로감'],
-    prevention: ['비누로 손을 자주 씻고 기침·재채기는 옷소매로 가리기', '환기가 어려운 혼잡한 실내에서는 마스크 착용하기', '예방접종 시기와 본인에게 적합한 접종 여부를 의료기관에 문의하기'],
-    localAdvice: '고열이나 기침이 지속되면 마스크를 착용하고 의료기관에 방문해 독감 검사가 가능한지 문의하세요. 임신부·고령자·기저질환자는 증상 초기에 진료를 권합니다. 항생제는 독감 바이러스에 효과가 없으므로 임의 복용하지 마세요.',
+    background: '하노이의 건기·겨울철에는 일교차가 커지고, 환기가 부족한 실내와 혼잡한 대중교통에서 호흡기 바이러스가 퍼지기 쉽습니다. 독감과 일반 상기도 감염은 증상만으로 구분하기 어려울 수 있습니다.',
+    symptoms: ['갑작스러운 발열·오한', '기침·인후통·콧물', '두통·근육통과 심한 피로감', '숨이 차거나 호전 후 다시 악화되는 증상'],
+    preventionStages: [
+      { label: '생활 습관', steps: ['비누와 흐르는 물로 손가락 사이·손톱 밑까지 30초 이상 씻기', '예방접종 가능 여부와 시기는 의료기관에 문의하기'] },
+      { label: '외출 중', steps: ['혼잡하거나 환기가 어려운 실내에서는 마스크 착용 고려하기', '기침·재채기는 옷소매로 가리고 얼굴을 만지지 않기'] },
+      { label: '귀가 후·실내', steps: ['손을 씻고 자주 만지는 표면을 청결히 하기', '실내 습도는 대체로 40–60% 범위에서 유지하고 주기적으로 환기하기'] },
+    ],
+    localAdvice: '고열이 지속되거나 호흡곤란·흉통이 있으면 진료를 받으세요. 임신부, 고령자, 영유아, 만성질환자는 증상 초기에 의료진과 상담하는 편이 좋습니다. 항생제는 바이러스성 독감에 효과가 없으므로 임의로 복용하지 말고, 처방약·해열제는 의료진 또는 약사에게 확인하세요.',
   },
   {
     id: 'waterborne',
     name: '수인성·식중독 질환',
     text: '폭우·고온다습한 날에는 물과 음식의 위생 상태를 확인하세요.',
     icon: Droplets,
-    symptoms: ['설사와 복통', '메스꺼움 또는 구토', '발열과 탈수(심한 갈증·소변 감소)'],
-    prevention: ['밀봉 상태가 확인되는 생수나 끓인 물을 마시고 길거리 얼음은 피하기', '음식은 충분히 익혀 바로 먹고 상온에 오래 둔 음식은 피하기', '식사 전과 화장실 이용 후 비누로 손 씻기'],
-    localAdvice: '설사·구토가 있으면 안전한 물을 조금씩 자주 마시고, 약국에서 경구수분보충염(ORS)을 요청할 수 있어요. 혈변, 지속적인 고열, 심한 탈수 또는 물을 마시기 어려운 상태라면 의료기관 진료를 받으세요.',
+    background: '폭우·침수와 고온다습한 날씨는 식수·조리 환경의 오염과 음식 부패 위험을 높일 수 있습니다. 출처가 불분명한 식수·얼음·조리 상태가 불확실한 음식은 여행자 설사와 식중독 위험 요인입니다.',
+    symptoms: ['묽은 설사 또는 복통·경련', '메스꺼움·구토', '발열', '심한 갈증·소변 감소·어지럼 등 탈수 징후'],
+    preventionStages: [
+      { label: '먹기 전', steps: ['밀봉이 온전한 생수나 끓인 물을 선택하고 길거리 얼음 피하기', '생채소·껍질째 먹는 과일은 세척수와 취급 상태를 확인하고 의심되면 피하기'] },
+      { label: '식사 중', steps: ['음식은 충분히 익혀 뜨거울 때 먹고 상온에 오래 둔 음식 피하기', '덜 익힌 고기·해산물과 비살균 유제품 피하기'] },
+      { label: '생활 습관', steps: ['식사 전과 화장실 이용 후 비누로 손 씻기', '침수된 물은 마시거나 조리에 사용하지 않기'] },
+    ],
+    localAdvice: '설사·구토가 있으면 밀봉 생수로 만든 경구수분보충액(ORS)을 제품 설명대로 조금씩 자주 마시세요. 혈변, 지속되는 고열, 심한 복통, 소변 감소·의식 저하 등 탈수 징후가 있거나 물도 유지하지 못하면 의료기관을 방문하세요. 항생제나 지사제를 임의로 복용하기보다 먼저 의료진과 상담하세요.',
   },
   {
     id: 'heat',
     name: '열사병·온열질환',
     text: '체감온도가 높을 때는 한낮 야외 활동과 탈수를 조심하세요.',
     icon: Sun,
-    symptoms: ['두통·어지럼 또는 메스꺼움', '심한 갈증과 근육 경련', '뜨거운 피부, 의식 혼란 또는 실신'],
-    prevention: ['물병을 챙겨 갈증이 나기 전부터 자주 수분 보충하기', '한낮 활동을 줄이고 그늘이나 냉방되는 실내에서 쉬기', '통풍되는 옷을 입고 동행자의 상태도 서로 살피기'],
+    background: '하노이의 덥고 습한 날씨와 폭염 시뮬레이션에서는 땀이 잘 증발하지 않아 체온 조절이 어려워질 수 있습니다. 한낮 야외 노동·운동, 탈수, 냉방 없는 공간 체류가 위험을 높입니다.',
+    symptoms: ['두통·어지럼·메스꺼움', '심한 갈증·근육 경련·무기력', '뜨거운 피부와 빠른 맥박', '혼란·실신·경련(응급 신호)'],
+    preventionStages: [
+      { label: '외출 전', steps: ['폭염 시간대 야외 활동을 조정하고 물과 가벼운 옷 준비하기', '냉방 가능한 장소를 미리 확인하기'] },
+      { label: '외출 중', steps: ['그늘이나 냉방 공간에서 자주 쉬고 갈증 전부터 물을 조금씩 마시기', '동행자의 어지럼·혼란 등 증상을 서로 확인하기'] },
+      { label: '생활 습관', steps: ['통풍되는 옷을 입고 한낮 격한 운동 피하기', '실내를 시원하게 유지하고 취약한 이웃의 안부 확인하기'] },
+    ],
     localAdvice: '열사병이 의심되면 즉시 응급 도움을 요청하고, 시원한 장소로 옮겨 옷을 느슨하게 한 뒤 몸을 식히세요. 의식이 흐리거나 구토하는 사람에게 억지로 물을 먹이지 마세요. 혼자 이동하기보다 가까운 사람에게 도움을 요청하세요.',
   },
 ]
@@ -316,6 +342,25 @@ function App() {
     return score >= 3 ? '높음' : score >= 2 ? '경계' : '주의'
   }
   const activeDisease = diseases.find(item => item.id === selectedDisease) ?? diseases[0]
+  const priorityDisease = [...diseases].sort((a, b) => diseaseRisk[b.id] - diseaseRisk[a.id])[0]
+  const priorityReason = priorityDisease.id === 'respiratory'
+    ? current.aqi > 100 || current.pm25 > 35
+      ? `AQI ${current.aqi}, PM2.5 ${current.pm25} μg/m³로 대기 오염물질이 호흡기 점막을 자극할 수 있어요.`
+      : `습도 ${current.humidity}%와 대기 상태 변화가 기침·천식 증상을 악화시킬 수 있어요.`
+    : priorityDisease.id === 'dengue'
+      ? `습도 ${current.humidity}%${current.rainChance >= 70 || current.rainfall >= 10 ? `, 강수 확률 ${current.rainChance}%` : ''}로 모기 번식과 낮 시간 노출에 유의해야 해요.`
+      : priorityDisease.id === 'heat'
+        ? `기온 ${current.temperature}°C, 체감 ${current.feelsLike}°C로 땀 배출과 체온 조절이 어려울 수 있어요.`
+        : priorityDisease.id === 'waterborne'
+          ? `강수 확률 ${current.rainChance}%와 습도 ${current.humidity}%로 물·음식 위생에 더 신경 써야 해요.`
+          : `건기·큰 일교차와 실내 밀집 환경이 호흡기 감염 전파 위험을 높일 수 있어요.`
+  const priorityAction: Record<DiseaseId, string> = {
+    respiratory: '외출 시 KF94 마스크를 착용하고, 귀가 후 손·얼굴을 씻은 뒤 실내 공기청정기를 가동하세요.',
+    dengue: '낮 외출 전 DEET·이카리딘 기피제를 사용하고 긴 옷을 입으세요. 고열이 나면 진료를 받으세요.',
+    flu: '손을 30초 이상 씻고 혼잡한 실내에서는 마스크를 착용하세요.',
+    waterborne: '밀봉 생수나 끓인 물만 마시고, 길거리 얼음과 덜 익힌 음식은 피하세요.',
+    heat: '한낮 활동을 줄이고 그늘·냉방 공간에서 쉬며 물을 자주 마시세요.',
+  }
   const toggleHealthTask = (task: string) => {
     setCompletedHealthTasks(currentTasks => currentTasks.includes(task)
       ? currentTasks.filter(item => item !== task)
@@ -498,10 +543,25 @@ function App() {
               <div>
                 <div className="eyebrow">계절 건강 안내</div>
                 <h2>하노이 건강 가이드 <span className="season-chip"><Moon size={12} /> {season}</span></h2>
-                <p>현재 기온·습도·강수·대기질과 선택한 상황을 반영한 예방 안내예요.</p>
+                <p>오늘의 날씨와 대기질을 반영한 질환별 예방 안내예요.</p>
               </div>
               <span className="health-mark"><HeartPulse size={18} /></span>
             </div>
+            <section className={`health-briefing risk-${riskLevel(priorityDisease.id)}`} aria-labelledby="health-briefing-title">
+              <div className="health-briefing-top">
+                <div>
+                  <span className="health-briefing-kicker"><Activity size={15} /> 오늘의 맞춤 건강 브리핑</span>
+                  <h3 id="health-briefing-title">오늘 주의 1순위 · {priorityDisease.name}</h3>
+                </div>
+                <span className={`risk-badge risk-${riskLevel(priorityDisease.id)}`}>{riskLevel(priorityDisease.id)} 단계</span>
+              </div>
+              <p className="health-briefing-reason">{priorityReason}</p>
+              <div className="health-briefing-metrics">
+                <span>{current.temperature}°C</span><span>습도 {current.humidity}%</span><span>AQI {current.aqi}</span><span>PM10 {current.pm10}</span><span>PM2.5 {current.pm25}</span><span>{mode === 'live' ? '실시간' : `${modeButtons.find(item => item.value === mode)?.label} 모드`}</span>
+              </div>
+              <p className="health-briefing-action"><Shield size={16} />{priorityAction[priorityDisease.id]}</p>
+            </section>
+            <h3 className="health-guides-title">질환별 상세 가이드 <span>선택해 증상과 단계별 예방 수칙을 확인하세요</span></h3>
             <div className="health-grid" role="tablist" aria-label="질병별 건강 가이드">
               {diseases.map(item => {
                 const level = riskLevel(item.id)
@@ -529,7 +589,7 @@ function App() {
                   >
                     <span className="disease-icon"><DiseaseIcon size={16} /></span>
                     <span className="health-card-copy">
-                      <span className="disease-season">{season} · 오늘의 위험도</span>
+                      <span className="disease-season">{item.id === 'heat' ? '기후별 추가 가이드' : '주요 질환'} · 오늘의 위험도</span>
                       <span className="health-card-title">{item.name}</span>
                       <span className="health-card-description">{item.text}</span>
                     </span>
@@ -552,20 +612,29 @@ function App() {
                   </div>
                   <span className={`risk-badge risk-${riskLevel(activeDisease.id)}`}>오늘 {riskLevel(activeDisease.id)}</span>
                 </div>
-                <div className="detail-columns">
-                  <section className="detail-block">
-                    <h4>주요 의심 증상</h4>
-                    <ul className="symptom-list">{activeDisease.symptoms.map(symptom => <li key={symptom}>{symptom}</li>)}</ul>
-                  </section>
-                  <section className="detail-block">
-                    <h4>일상 예방 체크</h4>
-                    <ul className="prevention-list">{activeDisease.prevention.map(item => <li key={item}><Check size={14} />{item}</li>)}</ul>
-                  </section>
-                </div>
-                <details className="local-advice">
-                  <summary className="local-advice-title"><MapPin size={14} /> 하노이 현지 대처 자세히 보기</summary>
+                <section className="disease-background">
+                  <h4><MapPin size={15} /> 하노이 발생 배경·위험 요인</h4>
+                  <p>{activeDisease.background}</p>
+                </section>
+                <section className="detail-block disease-symptoms">
+                  <h4>주요 초기 의심 증상</h4>
+                  <ul className="symptom-list">{activeDisease.symptoms.map(symptom => <li key={symptom}>{symptom}</li>)}</ul>
+                </section>
+                <section className="disease-prevention">
+                  <h4>단계별 예방 수칙</h4>
+                  <div className="prevention-stages">
+                    {activeDisease.preventionStages.map((stage, index) => (
+                      <article className={`prevention-stage prevention-stage-${index + 1}`} key={stage.label}>
+                        <h5><span>{index + 1}</span>{stage.label}</h5>
+                        <ul>{stage.steps.map(step => <li key={step}><Check size={15} />{step}</li>)}</ul>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+                <div className={`local-advice ${activeDisease.id === 'dengue' ? 'dengue-advice' : ''}`}>
+                  <div className="local-advice-title"><ShieldAlert size={15} /> 현지 대처·복약 및 진료 주의</div>
                   <p>{activeDisease.localAdvice}</p>
-                </details>
+                </div>
               </article>
               <aside className="daily-health-card">
                 <div className="daily-health-heading">
@@ -593,7 +662,21 @@ function App() {
                 <div className="health-progress"><span style={{ width: `${(completedHealthTasks.length / dailyHealthTasks.length) * 100}%` }} /></div>
               </aside>
             </div>
-            <div className="health-disclaimer"><ShieldAlert size={14} /><span>본 안내는 공공 기상 및 보건 정보를 바탕으로 한 일반 예방 가이드이며, 고열·호흡곤란 등 증상 지속 시 현지 의료기관 진료를 권장합니다.</span></div>
+            <section className="hospital-reference" aria-labelledby="hospital-reference-title">
+              <div className="hospital-reference-heading">
+                <div><span className="eyebrow">현지 진료 참고</span><h3 id="hospital-reference-title">하노이 의료기관·응급 연락 안내</h3></div>
+                <span className="emergency-number"><span>응급 의료</span><strong>115</strong></span>
+              </div>
+              <p className="hospital-reference-intro">미딩·중화·떠이호 등 현재 위치에서 가까운 국제 진료기관 또는 종합병원에 먼저 연락해 진료 가능 여부를 확인하세요.</p>
+              <div className="hospital-reference-grid">
+                <article><strong>Family Medical Practice Hanoi</strong><span>외국인 대상 국제 진료 클리닉</span></article>
+                <article><strong>Vinmec International Hospital</strong><span>국제 진료를 제공하는 종합병원</span></article>
+                <article><strong>Hong Ngoc General Hospital</strong><span>하노이 종합병원·외국인 진료 문의</span></article>
+                <article><strong>International SOS Hanoi Clinic</strong><span>국제 의료 지원·클리닉</span></article>
+              </div>
+              <p className="hospital-contact-note">한국어 통역·국제 환자 접수·진료과·운영 시간은 날짜와 지점에 따라 달라질 수 있으니 방문 전 전화로 확인하세요. 응급 상황에서는 베트남 구급차 번호 115에 연락하고, 위치를 현지어 또는 지도 핀으로 전달하세요.</p>
+            </section>
+            <div className="health-disclaimer"><ShieldAlert size={14} /><span>본 정보는 공공 보건·기상 데이터 기반 일반 예방 가이드이며, 증상 악화 시 전문 의료진 진료를 권장합니다.</span></div>
           </section>
           }
           </div>

@@ -1004,3 +1004,89 @@ body { color: #202b3c; font-size: 16px; line-height: 1.6; }
   .symptom-list li, .prevention-list li, .local-advice p { font-size: 14px; }
   .air-ranges-table th, .air-ranges-table td { font-size: 12px; }
 }
+.health-briefing {
+  margin: 20px 0 25px;
+  padding: 21px 23px;
+  border: 1px solid #cce5dd;
+  border-left: 5px solid #08785f;
+  border-radius: 12px;
+  background: linear-gradient(120deg, #eff9f4 0%, #f7fbff 100%);
+}
+.health-briefing.risk-경계 { border-color: #ebd5a5; border-left-color: #b87917; background: linear-gradient(120deg, #fff8e9 0%, #fffdf7 100%); }
+.health-briefing.risk-높음 { border-color: #e8c1bc; border-left-color: #c64b48; background: linear-gradient(120deg, #fff0ed 0%, #fff9f7 100%); }
+.health-briefing-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.health-briefing-kicker { display: flex; align-items: center; gap: 7px; color: #155e52; font-size: 14px; font-weight: 700; }
+.risk-경계 .health-briefing-kicker { color: #80530f; }
+.risk-높음 .health-briefing-kicker { color: #a5333b; }
+.health-briefing-top h3 { margin: 6px 0 0; color: #202b3c; font-size: 21px; line-height: 1.4; }
+.health-briefing-reason { margin: 12px 0; color: #344256; font-size: 15px; line-height: 1.65; }
+.health-briefing-metrics { display: flex; flex-wrap: wrap; gap: 7px; }
+.health-briefing-metrics span { padding: 5px 9px; border: 1px solid #d6e8e1; border-radius: 20px; color: #155e52; background: rgb(255 255 255 / 75%); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.health-briefing-action { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 0; padding: 11px 13px; border-radius: 8px; color: #fff; background: #126d60; font-size: 14px; font-weight: 600; line-height: 1.6; }
+.risk-경계 .health-briefing-action { background: #8d5b14; }
+.risk-높음 .health-briefing-action { background: #a63d42; }
+.health-briefing-action svg { margin-top: 2px; }
+.health-guides-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin: 0 0 12px; color: #25364a; font-size: 18px; }
+.health-guides-title span { color: #59697a; font-size: 13px; font-weight: 400; }
+.health-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.health-card { min-height: 88px; align-items: center; }
+.health-card[aria-selected="true"] { border-color: #5da98c; box-shadow: 0 0 0 2px rgb(8 120 95 / 10%); }
+.disease-background { margin: 16px 0; padding: 13px 15px; border: 1px solid #cde2ef; border-radius: 9px; background: #f0f8fc; }
+.disease-background h4, .disease-symptoms h4, .disease-prevention > h4 { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; color: #244a5e; font-size: 14px; font-weight: 700; }
+.disease-background h4 svg { color: #1473a6; }
+.disease-background p { margin: 0; color: #35556c; font-size: 14px; line-height: 1.7; }
+.disease-symptoms { margin: 16px 0; }
+.disease-symptoms h4, .disease-prevention > h4 { color: #155e52; }
+.disease-symptoms .symptom-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; }
+.disease-symptoms .symptom-list li { font-size: 14px; line-height: 1.6; }
+.disease-symptoms .symptom-list li::before { top: .65em; width: 5px; height: 5px; background: #d0872b; }
+.disease-prevention { margin: 18px 0; }
+.prevention-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.prevention-stage { padding: 12px; border: 1px solid #dce8e2; border-radius: 8px; background: #f9fcfa; }
+.prevention-stage-1 { border-color: #c9d8f0; background: #f5f7fd; }
+.prevention-stage-2 { border-color: #d8e7c9; background: #f7fbf1; }
+.prevention-stage-3 { border-color: #c9e5dc; background: #f1faf6; }
+.prevention-stage h5 { display: flex; align-items: center; gap: 7px; margin: 0 0 9px; color: #344256; font-size: 13px; }
+.prevention-stage h5 span { display: grid; width: 23px; height: 23px; place-items: center; border-radius: 50%; color: #fff; background: #4b55a5; font-size: 12px; }
+.prevention-stage-2 h5 span { background: #60823b; }
+.prevention-stage-3 h5 span { background: #08785f; }
+.prevention-stage ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.prevention-stage li { display: flex; align-items: flex-start; gap: 6px; color: #405064; font-size: 13px; line-height: 1.6; }
+.prevention-stage li svg { flex: 0 0 auto; margin-top: 3px; color: #08785f; }
+.local-advice { margin-top: 15px; padding: 14px 15px; border: 1px solid #ead3ac; border-radius: 9px; background: #fff8eb; }
+.local-advice.dengue-advice { border-color: #e5b4ac; background: #fff1ee; }
+.local-advice-title { display: flex; align-items: center; gap: 7px; color: #80530f; font-size: 14px; font-weight: 700; }
+.dengue-advice .local-advice-title { color: #a43e3e; }
+.local-advice p { margin: 7px 0 0; color: #594a34; font-size: 14px; line-height: 1.7; }
+.dengue-advice p { color: #683d3a; }
+.hospital-reference { margin-top: 22px; padding: 19px; border: 1px solid #cbdde8; border-radius: 11px; background: linear-gradient(145deg, #f1f8fc 0%, #f8fbfd 100%); }
+.hospital-reference-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hospital-reference-heading h3 { margin: 5px 0 0; color: #20394c; font-size: 19px; }
+.emergency-number { display: flex; align-items: center; gap: 9px; padding: 6px 11px; border: 1px solid #e8b9b3; border-radius: 8px; color: #9c3438; background: #fff0ef; }
+.emergency-number span { font-size: 12px; font-weight: 650; }
+.emergency-number strong { font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; }
+.hospital-reference-intro, .hospital-contact-note { color: #40566a; font-size: 13px; line-height: 1.65; }
+.hospital-reference-intro { margin: 12px 0; }
+.hospital-reference-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.hospital-reference-grid article { display: grid; gap: 4px; padding: 11px 13px; border: 1px solid #d9e5ed; border-radius: 8px; background: #fff; }
+.hospital-reference-grid strong { color: #263d50; font-size: 14px; }
+.hospital-reference-grid span { color: #52677a; font-size: 12px; }
+.hospital-contact-note { margin: 12px 0 0; padding-top: 11px; border-top: 1px solid #d7e3eb; }
+.health-disclaimer { margin-top: 14px; padding: 11px 13px; border-radius: 7px; background: #f2f5f7; }
+@media (max-width: 700px) {
+  .health-briefing { padding: 16px; }
+  .health-briefing-top h3 { font-size: 18px; }
+  .health-briefing-reason { font-size: 14px; }
+  .health-briefing-metrics span { font-size: 11px; }
+  .health-briefing-action { font-size: 13px; }
+  .health-guides-title { font-size: 16px; }
+  .health-guides-title span { font-size: 12px; }
+  .health-grid { grid-template-columns: 1fr; }
+  .disease-symptoms .symptom-list { grid-template-columns: 1fr; }
+  .prevention-stages { grid-template-columns: 1fr; }
+  .hospital-reference { padding: 15px; }
+  .hospital-reference-heading h3 { font-size: 17px; }
+  .hospital-reference-grid { grid-template-columns: 1fr; }
+  .hospital-reference-intro, .hospital-contact-note { font-size: 12px; }
+  .hospital-reference-grid strong { font-size: 13px; }
+}
