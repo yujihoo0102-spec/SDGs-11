@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  font-family: "Pretendard", "Plus Jakarta Sans", sans-serif;
+  font-family: "Pretendard", "Be Vietnam Pro", "Plus Jakarta Sans", sans-serif;
   color: #1e293b;
   background: #f4f5f7;
   font-synthesis: none;
@@ -111,6 +111,16 @@ svg { flex-shrink: 0; stroke-width: 1.75; }
 .header-location svg, .header-time svg { color: #83909b; }
 .header-time { color: #475467; font-family: "Plus Jakarta Sans", "Pretendard", sans-serif; }
 .topbar-right { gap: 10px; }
+.language-select {
+  min-height: 44px;
+  padding: 0 34px 0 12px;
+  border: 1px solid #d6e1e4;
+  border-radius: 10px;
+  color: #344c5a;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 650;
+}
 .mode-label { color: var(--soft); font-size: 9px; white-space: nowrap; }
 .mode-switch { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: 7px; background: #f8f9fa; }
 .mode-switch button {
@@ -1540,4 +1550,5 @@ body { color: #202b3c; font-size: 16px; line-height: 1.6; }
   .notification-settings-trigger { gap: 6px; padding: 6px 8px; }
   .notification-settings-trigger > svg { width: 17px; }
   .notification-settings-trigger > strong { padding: 3px 6px; }
+  .language-select { min-height: 42px; padding-left: 8px; padding-right: 23px; }
 }
