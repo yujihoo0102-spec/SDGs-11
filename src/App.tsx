@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   Activity, ArrowUpRight, BadgeCheck, Bug, Building2, CalendarDays,
   Check, ChevronDown, Clock3, Cloud, CloudDrizzle, CloudRain, CloudSun, Droplets, Fan,
-  Footprints, HeartPulse, MapPin, Moon, Shield, ShieldAlert, Shirt, ShoppingBag,
+  Footprints, HeartPulse, MapPin, Moon, Shield, ShieldAlert, Shirt, ShoppingBag, Bell, X,
   Sun, Umbrella, Wind,
 } from 'lucide-react'
 
@@ -53,6 +53,30 @@ type RiskLevel = '주의' | '경계' | '높음'
 const sample: WeatherData = {
   temperature: 29, feelsLike: 34, humidity: 76, rainChance: 25, rainfall: 0,
   pm10: 42, pm25: 28, aqi: 72, wind: 11, code: 2, updatedAt: '',
+}
+const morningNotificationTimes = ['06:30', '07:00', '07:30', '08:00'] as const
+const notificationEnabledStorageKey = 'hanoi-morning-notification-enabled'
+const notificationTimeStorageKey = 'hanoi-morning-notification-time'
+const notificationSentDateStorageKey = 'hanoi-morning-notification-sent-date'
+
+const hanoiDateAndTime = (date: Date) => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Bangkok',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value
+  const year = part('year')
+  const month = part('month')
+  const day = part('day')
+  const hour = part('hour')
+  const minute = part('minute')
+  if (!year || !month || !day || !hour || !minute) throw new Error('하노이 현지 시각을 확인하지 못했습니다.')
+  return { date: `${year}-${month}-${day}`, time: `${hour}:${minute}` }
 }
 const diseases: Disease[] = [
   {
@@ -322,6 +346,16 @@ function App() {
   const [selectedDisease, setSelectedDisease] = useState<DiseaseId>('dengue')
   const [selectedFirstAid, setSelectedFirstAid] = useState<FirstAidId>('heat')
   const [completedHealthTasks, setCompletedHealthTasks] = useState<string[]>([])
+  const [notificationSettingsOpen, setNotificationSettingsOpen] = useState(false)
+  const [notificationEnabled, setNotificationEnabled] = useState(() =>
+    window.localStorage.getItem(notificationEnabledStorageKey) === 'true' &&
+    typeof Notification !== 'undefined' &&
+    Notification.permission === 'granted')
+  const [notificationTime, setNotificationTime] = useState(() => {
+    const savedTime = window.localStorage.getItem(notificationTimeStorageKey)
+    return morningNotificationTimes.find(time => time === savedTime) ?? '07:00'
+  })
+  const [notificationStatus, setNotificationStatus] = useState('')
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60_000)
@@ -458,6 +492,91 @@ function App() {
     return { ...window, temperature: Math.round(temps.reduce((sum, value) => sum + value, 0) / temps.length), feelsLike: Math.round(feels), rainChance: rain }
   })
   const mask = current.aqi > 150 ? 'KF94 마스크 필수' : current.aqi > 100 ? '보건용 마스크 권장' : current.aqi > 50 ? '민감한 분은 마스크 권장' : '마스크 미착용 가능'
+  const createWeatherNotification = (tag: string) => {
+    const notification = new Notification('하노이 아침 날씨', {
+      body: `기온 ${current.temperature}°C · ${codeText(current.code)}\nUS AQI ${current.aqi} (${qualityText(current.aqi)}) · ${mask}`,
+      tag,
+    })
+    notification.onclick = () => window.focus()
+    return notification
+  }
+  const sendTestNotification = async () => {
+    if (typeof Notification === 'undefined') {
+      setNotificationStatus('이 브라우저는 알림을 지원하지 않습니다.')
+      return
+    }
+    const permission = Notification.permission === 'granted'
+      ? 'granted'
+      : await Notification.requestPermission()
+    if (permission !== 'granted') {
+      setNotificationStatus(permission === 'denied'
+        ? '브라우저 설정에서 알림 권한을 허용해 주세요.'
+        : '알림 권한을 허용하면 테스트를 보낼 수 있습니다.')
+      return
+    }
+    createWeatherNotification('hanoi-weather-test')
+    setNotificationStatus('테스트 알림을 보냈습니다.')
+  }
+  const toggleMorningNotifications = async () => {
+    if (notificationEnabled) {
+      setNotificationEnabled(false)
+      window.localStorage.setItem(notificationEnabledStorageKey, 'false')
+      setNotificationStatus('아침 알림을 껐습니다.')
+      return
+    }
+    if (typeof Notification === 'undefined') {
+      setNotificationStatus('이 브라우저는 알림을 지원하지 않습니다.')
+      return
+    }
+    const permission = await Notification.requestPermission()
+    if (permission === 'granted') {
+      setNotificationEnabled(true)
+      window.localStorage.setItem(notificationEnabledStorageKey, 'true')
+      setNotificationStatus('아침 알림을 켰습니다.')
+    } else {
+      setNotificationEnabled(false)
+      window.localStorage.setItem(notificationEnabledStorageKey, 'false')
+      setNotificationStatus(permission === 'denied'
+        ? '브라우저 설정에서 알림 권한을 허용해 주세요.'
+        : '알림 권한이 허용되지 않았습니다.')
+    }
+  }
+
+  useEffect(() => {
+    if (!notificationEnabled || typeof Notification === 'undefined' || Notification.permission !== 'granted') return
+    const checkScheduledNotification = () => {
+      const { date, time } = hanoiDateAndTime(new Date())
+      const [hour, minute] = time.split(':').map(Number)
+      const [scheduledHour, scheduledMinute] = notificationTime.split(':').map(Number)
+      const minutesAfterSchedule = hour * 60 + minute - (scheduledHour * 60 + scheduledMinute)
+      if (minutesAfterSchedule < 0 || minutesAfterSchedule > 60) return
+      if (window.localStorage.getItem(notificationSentDateStorageKey) === date) return
+      createWeatherNotification(`hanoi-weather-${date}`)
+      window.localStorage.setItem(notificationSentDateStorageKey, date)
+    }
+    const timer = window.setInterval(checkScheduledNotification, 15_000)
+    document.addEventListener('visibilitychange', checkScheduledNotification)
+    checkScheduledNotification()
+    return () => {
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', checkScheduledNotification)
+    }
+  }, [notificationEnabled, notificationTime, current.temperature, current.aqi, current.code, mask])
+
+  useEffect(() => {
+    if (!notificationSettingsOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setNotificationSettingsOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [notificationSettingsOpen])
+
+  const saveNotificationTime = (time: typeof morningNotificationTimes[number]) => {
+    setNotificationTime(time)
+    window.localStorage.setItem(notificationTimeStorageKey, time)
+    setNotificationStatus(`알림 시각을 ${time}으로 저장했습니다.`)
+  }
   const pm10Quality = pollutantQuality(current.pm10, 54, 154, 254)
   const pm25Quality = pollutantQuality(current.pm25, 9, 35.4, 55.4)
   const airAction = current.aqi > 150 || pm25Quality === '매우 나쁨' || pm10Quality === '매우 나쁨'
@@ -528,8 +647,35 @@ function App() {
           </div>
           <div className="topbar-right">
             <div className="mode-switch" role="group" aria-label="날씨 시뮬레이션">{modeButtons.map(button => <button key={button.value} className={mode === button.value ? 'selected' : ''} aria-pressed={mode === button.value} aria-label={`${button.label} 시뮬레이션, 다시 누르면 실시간 날씨로 돌아갑니다`} onClick={() => setMode(mode === button.value ? 'live' : button.value)}>{button.label}</button>)}</div>
+            <button className={`notification-settings-trigger ${notificationEnabled ? 'is-enabled' : ''}`} type="button" aria-expanded={notificationSettingsOpen} aria-controls="notification-settings-dialog" onClick={() => setNotificationSettingsOpen(true)}>
+              <Bell size={19} /><span>아침 알림 설정</span><strong>{notificationEnabled ? '켜짐' : '꺼짐'}</strong>
+            </button>
           </div>
         </header>
+
+        {notificationSettingsOpen && <div className="notification-dialog-backdrop" onClick={() => setNotificationSettingsOpen(false)}>
+          <section className="notification-dialog" id="notification-settings-dialog" role="dialog" aria-modal="true" aria-labelledby="notification-dialog-title" onClick={event => event.stopPropagation()}>
+            <div className="notification-dialog-heading">
+              <div className="notification-dialog-icon"><Bell size={22} /></div>
+              <div><h2 id="notification-dialog-title">아침 알림 설정</h2><p>하노이 날씨와 대기질을 매일 알려드려요.</p></div>
+              <button className="notification-dialog-close" type="button" aria-label="설정 창 닫기" autoFocus onClick={() => setNotificationSettingsOpen(false)}><X size={21} /></button>
+            </div>
+            <div className="notification-setting-row">
+              <div><strong>아침 알림</strong><span>브라우저 알림 권한이 필요합니다.</span></div>
+              <button className={`notification-toggle ${notificationEnabled ? 'is-enabled' : ''}`} type="button" role="switch" aria-checked={notificationEnabled} onClick={() => void toggleMorningNotifications()}><span /><b>{notificationEnabled ? '켜짐' : '꺼짐'}</b></button>
+            </div>
+            <label className="notification-time-label" htmlFor="notification-time">아침 알림 시각</label>
+            <select id="notification-time" className="notification-time-select" value={notificationTime} onChange={event => {
+              const time = morningNotificationTimes.find(option => option === event.currentTarget.value)
+              if (time) saveNotificationTime(time)
+            }}>
+              {morningNotificationTimes.map(time => <option key={time} value={time}>{time}</option>)}
+            </select>
+            <p className="notification-schedule-note">앱이 열려 있을 때 알림을 보냅니다. 시각이 지난 뒤 1시간 이내 다시 열면 한 번 알림을 보충합니다.</p>
+            <button className="notification-test-button" type="button" onClick={() => void sendTestNotification()}><Bell size={18} /> 지금 테스트 알림 보내기</button>
+            <p className="notification-status" role="status" aria-live="polite">{notificationStatus}</p>
+          </section>
+        </div>}
 
         <nav className="section-tabs" role="tablist" aria-label="앱 섹션">
           <button id="section-tab-home" type="button" role="tab" aria-selected={activeSection === 'home'} aria-controls="section-panel-home" className={activeSection === 'home' ? 'section-tab selected' : 'section-tab'} onClick={() => setActiveSection('home')}><Sun size={17} /><span>메인</span></button>
