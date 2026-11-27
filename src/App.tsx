@@ -309,7 +309,7 @@ function HourlyChart({ points }: { points: HourlyForecast[] }) {
 function App() {
   const [weather, setWeather] = useState<WeatherData>(sample)
   const [mode, setMode] = useState<Mode>('live')
-  const [activeSection, setActiveSection] = useState<'briefing' | 'forecast' | 'places' | 'health'>('briefing')
+  const [activeSection, setActiveSection] = useState<'home' | 'forecast' | 'air' | 'outfit' | 'places' | 'health'>('home')
   const [airDetailsOpen, setAirDetailsOpen] = useState(false)
   const [alertsCollapsed, setAlertsCollapsed] = useState(false)
   const [completedWeatherChecks, setCompletedWeatherChecks] = useState<string[]>([])
@@ -512,8 +512,9 @@ function App() {
     { value: 'heat', label: '폭염' },
   ]
   const sections = [
-    { id: 'briefing' as const, label: '오늘의 브리핑', icon: CloudSun, summary: `${codeText(current.code)} · ${current.temperature}°C, AQI ${current.aqi}. ${scoreLine}.` },
     { id: 'forecast' as const, label: '시간·주간 예보', icon: CalendarDays, summary: `오늘 강수 확률 ${current.rainChance}% · 24시간 변화와 7일 예보를 확인하세요.` },
+    { id: 'air' as const, label: '대기질', icon: Wind, summary: `US AQI ${current.aqi} · ${qualityText(current.aqi)} · ${mask}.` },
+    { id: 'outfit' as const, label: '옷차림·준비물', icon: Shirt, summary: '오늘 날씨에 맞는 옷차림과 준비물을 확인하세요.' },
     { id: 'places' as const, label: '안전 대피·한인 거점', icon: MapPin, summary: `${area === '전체 보기' ? '하노이 한인 거주 권역' : area}의 실내 거점을 확인하고, 폭우 시에는 당국 안내와 침수 정보를 우선하세요.` },
     { id: 'health' as const, label: '건강·질병 가이드', icon: HeartPulse, summary: `${season} · 오늘은 ${diseases.filter(item => riskLevel(item.id) === '높음').map(item => item.name).join('·') || '일상 예방 수칙'}에 유의하고 건강 체크리스트를 실천하세요.` },
   ]
@@ -531,6 +532,7 @@ function App() {
         </header>
 
         <nav className="section-tabs" role="tablist" aria-label="앱 섹션">
+          <button id="section-tab-home" type="button" role="tab" aria-selected={activeSection === 'home'} aria-controls="section-panel-home" className={activeSection === 'home' ? 'section-tab selected' : 'section-tab'} onClick={() => setActiveSection('home')}><Sun size={17} /><span>메인</span></button>
           {sections.map(section => {
             const SectionIcon = section.icon
             return <button key={section.id} id={`section-tab-${section.id}`} type="button" role="tab" aria-selected={activeSection === section.id} aria-controls={`section-panel-${section.id}`} tabIndex={activeSection === section.id ? 0 : -1} className={activeSection === section.id ? 'section-tab selected' : 'section-tab'} onClick={() => setActiveSection(section.id)} onKeyDown={event => {
@@ -547,6 +549,7 @@ function App() {
 
         <div className="page-wrap">
           <section className={`weather-alert-center ${weatherAlerts.length ? 'has-weather-alerts' : 'weather-all-clear'}`} aria-labelledby="weather-alert-heading">
+            {weatherAlerts.length > 0 && <button className="compact-alert-banner" type="button" onClick={() => setActiveSection('forecast')}><ShieldAlert size={19} /><span>{weatherAlerts[0].title.split(' — ')[0]}</span><b>자세히 보기 <ArrowUpRight size={16} /></b></button>}
             <div className="weather-alert-center-heading">
               <div>
                 <span className="weather-alert-kicker"><ShieldAlert size={16} /> 자동 기상·대기질 모니터링</span>
@@ -584,13 +587,45 @@ function App() {
           </section>
 
           <section className="page-heading">
-            <div><div className="eyebrow"><MapPin size={13} /> 하노이 · SDGs 11</div><h1>{sections.find(section => section.id === activeSection)?.label}</h1><p>{now.toLocaleDateString('ko-KR', { timeZone: 'Asia/Bangkok', month: 'long', day: 'numeric', weekday: 'long' })} · 지속가능한 도시를 위한 오늘의 기후·안전 정보</p></div>
+            <div><div className="eyebrow"><MapPin size={15} /> 하노이 · SDGs 11</div><h1>{activeSection === 'home' ? '오늘의 하노이' : sections.find(section => section.id === activeSection)?.label}</h1><p>{now.toLocaleDateString('ko-KR', { timeZone: 'Asia/Bangkok', month: 'long', day: 'numeric', weekday: 'long' })}</p></div>
+            {activeSection !== 'home' && <button className="back-home-button" type="button" onClick={() => setActiveSection('home')}>← 메인으로 돌아가기</button>}
           </section>
 
           <div className="section-summary" role="note"><span>핵심 요약</span><p>{sections.find(section => section.id === activeSection)?.summary}</p></div>
           <div className="active-panel" role="tabpanel" id={`section-panel-${activeSection}`} aria-labelledby={`section-tab-${activeSection}`}>
 
-          {activeSection === 'briefing' && <>
+          {activeSection === 'home' && <section className="dashboard-grid" aria-label="오늘의 핵심 요약">
+            <article className="dashboard-card dashboard-weather">
+              <div className="dashboard-card-top"><span className="dashboard-icon">{weatherIcon(current.code, 24)}</span><span className="dashboard-label">현재 날씨 · 외출 점수</span></div>
+              <div className="dashboard-weather-value"><strong>{current.temperature}°C</strong><span>{weatherIcon(current.code, 19)} {codeText(current.code)}</span></div>
+              <div className="dashboard-score"><strong>{score}점</strong><span>{scoreLine}</span></div>
+              <button type="button" className="dashboard-link" onClick={() => setActiveSection('forecast')}>자세히 보기 <ArrowUpRight size={17} /></button>
+            </article>
+            <article className="dashboard-card dashboard-air">
+              <div className="dashboard-card-top"><span className="dashboard-icon"><Wind size={23} /></span><span className="dashboard-label">오늘의 대기질</span></div>
+              <div className="dashboard-air-value"><strong>{current.aqi}</strong><span>AQI</span><b className={`quality-badge ${current.aqi > 100 ? 'bad' : current.aqi > 50 ? 'moderate' : ''}`}>{qualityText(current.aqi)}</b></div>
+              <p className="dashboard-summary">{current.aqi > 100 ? '보건용 마스크 권장' : current.aqi > 50 ? '민감군은 마스크 권장' : '마스크 없이 외출 가능'}</p>
+              <button type="button" className="dashboard-link" onClick={() => setActiveSection('air')}>상세 기준 보기 <ArrowUpRight size={17} /></button>
+            </article>
+            <article className="dashboard-card dashboard-outfit">
+              <div className="dashboard-card-top"><span className="dashboard-icon"><Shirt size={23} /></span><span className="dashboard-label">오늘의 옷차림 &amp; 준비물</span></div>
+              <h2>{current.temperature >= 33 ? '통기성 좋은 반팔' : current.temperature >= 28 ? '얇은 반팔과 가벼운 하의' : '얇은 긴팔과 가벼운 겉옷'}</h2>
+              <div className="dashboard-essentials">
+                {isRain && <span><Umbrella size={20} /> 우산</span>}
+                <span><Droplets size={20} /> 물병</span>
+                <span>{isHeat ? <Fan size={20} /> : <Sun size={20} />} {isHeat ? '손선풍기' : '선크림'}</span>
+              </div>
+              <button type="button" className="dashboard-link" onClick={() => setActiveSection('outfit')}>전체 가이드 <ArrowUpRight size={17} /></button>
+            </article>
+            <article className="dashboard-card dashboard-safety">
+              <div className="dashboard-card-top"><span className="dashboard-icon"><ShieldAlert size={23} /></span><span className="dashboard-label">안전 대피처 &amp; 건강 주의보</span></div>
+              <h2>{weatherAlerts.length ? weatherAlerts[0].title.split(' — ')[0] : `${priorityDisease.name} 주의`}</h2>
+              <p className="dashboard-summary">{weatherAlerts.length ? '기상 특보와 안전 행동을 확인하세요.' : `${priorityDisease.name} 예방 수칙을 확인하세요.`}</p>
+              <button type="button" className="dashboard-link" onClick={() => setActiveSection('places')}>대피 지도·예방법 보기 <ArrowUpRight size={17} /></button>
+            </article>
+          </section>}
+
+          {activeSection === 'home' && <>
           <section id="오늘" className="hero-grid">
             <div className={`weather-card ${isRain ? 'weather-rain' : isHeat ? 'weather-heat' : 'weather-clear'}`}>
               <div className="weather-card-top"><div><span className="card-overline">현재 날씨</span><div className="weather-location"><MapPin size={15} /> 하노이, 베트남 <ChevronDown size={14} /></div></div><div className="weather-date">{now.toLocaleDateString('ko-KR', { timeZone: 'Asia/Bangkok', month: 'long', day: 'numeric', weekday: 'long' })}</div></div>
@@ -651,7 +686,7 @@ function App() {
           </section>
           }
 
-          {activeSection === 'briefing' && <>
+          {activeSection === 'air' && <>
           <section id="대기질" className="section-block"><div className="section-heading"><div><div className="eyebrow">대기 환경</div><h2>오늘의 공기 상태 <span className={`quality-badge ${current.aqi > 100 ? 'bad' : current.aqi > 50 ? 'moderate' : ''}`}>{qualityText(current.aqi)}</span></h2><p>하노이의 대기질을 확인하고 호흡기를 보호해요.</p></div><button className="text-button" type="button" aria-expanded={airDetailsOpen} aria-controls="air-quality-details" onClick={() => setAirDetailsOpen(open => !open)}>{airDetailsOpen ? '상세 정보 접기' : '상세 정보'} <ArrowUpRight size={15} /></button></div>
             <div className="air-grid"><div className={`air-card aqi-card air-grade-${qualityText(current.aqi).replace(' ', '-')}`}><div className="air-card-heading"><div className="metric-icon purple"><Activity size={17} /></div><span>미국 통합 대기질 지수</span><button className="info-dot" type="button" aria-label="대기질 등급과 행동 요령 자세히 보기" aria-expanded={airDetailsOpen} aria-controls="air-quality-details" onClick={() => setAirDetailsOpen(open => !open)}>i</button></div><div className="aqi-line"><strong>{current.aqi}</strong><span>AQI</span><div className={`aqi-label air-grade-${qualityText(current.aqi).replace(' ', '-')}`}><i />{qualityText(current.aqi)}</div></div><div className="aqi-scale"><span style={{ left: `${Math.min(100, (current.aqi / 300) * 100)}%` }} /></div><div className="aqi-scale-labels"><span>좋음</span><span>보통</span><span>나쁨</span><span>매우 나쁨</span></div></div><div className={`air-card pollutant-card air-grade-${pm10Quality.replace(' ', '-')}`}><div className="air-card-heading"><div className="metric-icon mint"><Wind size={17} /></div><span>미세먼지 · PM10</span></div><div className="pollutant-reading">{current.pm10}<small> μg/m³</small></div><div className="pollutant-bottom"><span>미국 AQI 등급 기준</span><span className={`mini-good air-grade-${pm10Quality.replace(' ', '-')}`}>{pm10Quality}</span></div><div className="mini-progress"><i style={{ width: `${Math.min(100, (current.pm10 / 300) * 100)}%` }} /></div></div><div className={`air-card pollutant-card air-grade-${pm25Quality.replace(' ', '-')}`}><div className="air-card-heading"><div className="metric-icon blue"><Wind size={17} /></div><span>초미세먼지 · PM2.5</span></div><div className="pollutant-reading">{current.pm25}<small> μg/m³</small></div><div className="pollutant-bottom"><span>미국 AQI 등급 기준</span><span className={`mini-good air-grade-${pm25Quality.replace(' ', '-')}`}>{pm25Quality}</span></div><div className="mini-progress"><i className="blue-bar" style={{ width: `${Math.min(100, (current.pm25 / 100) * 100)}%` }} /></div></div></div>
             {airDetailsOpen && <div className="air-details-panel" id="air-quality-details">
@@ -663,7 +698,9 @@ function App() {
               <p className="air-data-source">하노이 실시간 대기질 데이터: Open-Meteo Air Quality API (US AQI, PM10, PM2.5). 등급 구간은 미국 EPA AQI 기준을 간단히 묶어 안내합니다.</p>
             </div>}
           </section>
+          </>}
 
+          {activeSection === 'outfit' && <>
           <section id="옷차림" className="section-block"><div className="section-heading"><div><div className="eyebrow">외출 준비</div><h2>오늘의 외출 준비</h2><p>현재 날씨에 꼭 맞는 옷차림과 준비물을 챙겨요.</p></div><div className="recommend-tag"><BadgeCheck size={15} /> 맞춤 추천</div></div>
             <div className="prep-grid"><div className="prep-card outfit-card"><div className="prep-title"><div className="prep-icon lavender"><Sun size={18} /></div><div><strong>오늘의 옷차림</strong><span>{current.temperature}°C · 습도 {current.humidity}% 기준</span></div></div><div className="outfit-row"><span className="outfit-icon"><Shirt size={16} /></span><div><b>상의</b><span>{current.temperature >= 33 ? '통기성 좋은 반팔 면 티셔츠' : current.temperature >= 28 ? '얇은 반팔 · 가벼운 블라우스' : '얇은 긴팔 셔츠 · 가디건'}</span></div><Check size={15} /></div><div className="outfit-row"><span className="outfit-icon"><Footprints size={16} /></span><div><b>하의</b><span>{current.humidity > 80 ? '통풍이 잘되는 얇은 면바지' : '가벼운 면바지 · 편한 스커트'}</span></div><Check size={15} /></div><div className="outfit-row"><span className="outfit-icon"><CloudSun size={16} /></span><div><b>겉옷</b><span>{isRain ? '작은 우산 또는 방수 재킷' : current.temperature > 32 ? '실내 냉방 대비 얇은 가디건' : '필요 시 얇은 겉옷'}</span></div><Check size={15} /></div><div className={`mask-note ${airBad ? 'mask-alert' : ''}`}><div className="mask-symbol"><Shield size={16} /></div><div><b>마스크 착용</b><span>{mask}</span></div><span className="mask-status">{current.aqi > 100 ? '권장' : '선택'}</span></div></div>
               <div className="prep-card essentials-card"><div className="prep-title"><div className="prep-icon peach"><ShoppingBag size={17} /></div><div><strong>꼭 챙겨요</strong><span>오늘의 필수 휴대품</span></div></div><div className="essential-list"><div className={isRain ? 'essential-active' : ''}><span><Umbrella size={16} /></span><b>접이식 우산</b><small>{isRain ? '필수' : current.rainChance >= 30 ? '챙기면 좋아요' : '선택'}</small></div><div><span><Sun size={16} /></span><b>선크림</b><small>SPF 30 이상</small></div><div className={isHeat ? 'essential-active' : ''}><span><Fan size={16} /></span><b>손선풍기</b><small>{isHeat ? '필수' : '더울 때 유용해요'}</small></div><div><span><Droplets size={16} /></span><b>물병</b><small>수분 보충</small></div></div><div className="essentials-tip"><BadgeCheck size={13} /> {isHeat ? '한낮에는 그늘에서 자주 쉬어 주세요.' : isRain ? '비가 많이 올 때는 지하도와 저지대를 피하세요.' : '자외선이 강한 날엔 선크림을 덧발라 주세요.'}</div></div></div>
@@ -673,7 +710,7 @@ function App() {
           {activeSection === 'places' && <section id="안전한장소" className="section-block places-section">
             <div className="section-heading">
               <div><div className="eyebrow">이상기후 대피 · 휴식</div><h2>한인 거주 지역 안전 거점</h2><p>권역별 실내 대피·휴식 장소와 위치를 확인하세요.</p></div>
-              <span className="place-count"><MapPin size={14} /> 하노이 주요 한인 권역</span>
+              <button className="text-button" type="button" onClick={() => setActiveSection('health')}>질병별 예방법·응급처치 보기 <ArrowUpRight size={16} /></button>
             </div>
             <div className="filters">
               <div className="area-filters" role="group" aria-label="한인 거주 권역 선택">
@@ -847,16 +884,16 @@ function App() {
                   </div>
                   <span className={`risk-badge risk-${riskLevel(activeDisease.id)}`}>오늘 {riskLevel(activeDisease.id)}</span>
                 </div>
-                <section className="disease-background">
-                  <h4><MapPin size={15} /> 하노이 발생 배경·위험 요인</h4>
+                <details className="disease-background">
+                  <summary><h4><MapPin size={15} /> 하노이 발생 배경·위험 요인</h4></summary>
                   <p>{activeDisease.background}</p>
-                </section>
-                <section className="detail-block disease-symptoms">
-                  <h4>주요 초기 의심 증상</h4>
+                </details>
+                <details className="detail-block disease-symptoms">
+                  <summary><h4>주요 초기 의심 증상</h4></summary>
                   <ul className="symptom-list">{activeDisease.symptoms.map(symptom => <li key={symptom}>{symptom}</li>)}</ul>
-                </section>
-                <section className="disease-prevention">
-                  <h4>단계별 예방 수칙</h4>
+                </details>
+                <details className="disease-prevention">
+                  <summary><h4>단계별 예방 수칙</h4></summary>
                   <div className="prevention-stages">
                     {activeDisease.preventionStages.map((stage, index) => (
                       <article className={`prevention-stage prevention-stage-${index + 1}`} key={stage.label}>
@@ -865,11 +902,11 @@ function App() {
                       </article>
                     ))}
                   </div>
-                </section>
-                <div className={`local-advice ${activeDisease.id === 'dengue' ? 'dengue-advice' : ''}`}>
-                  <div className="local-advice-title"><ShieldAlert size={15} /> 현지 대처·복약 및 진료 주의</div>
+                </details>
+                <details className={`local-advice ${activeDisease.id === 'dengue' ? 'dengue-advice' : ''}`}>
+                  <summary className="local-advice-title"><ShieldAlert size={15} /> 현지 대처·복약 및 진료 주의</summary>
                   <p>{activeDisease.localAdvice}</p>
-                </div>
+                </details>
               </article>
               <aside className="daily-health-card">
                 <div className="daily-health-heading">
